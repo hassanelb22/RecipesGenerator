@@ -1,7 +1,6 @@
 import streamlit as st
 import requests
 from PIL import Image
-import pytesseract
 
 # API configurations
 DEEPSEEK_API_URL = "https://api.deepseek.com/v1/recipe/generate"  # Replace with actual DeepSeek API endpoint
