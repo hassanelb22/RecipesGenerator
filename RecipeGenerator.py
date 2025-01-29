@@ -12,6 +12,43 @@ LANGUAGES = {
     "🇫🇷 French": "Générez une publication détaillée de recette en français dans le format structuré suivant:"
 }
 
+# Emoji mapping based on recipe keywords
+EMOJI_MAPPING = {
+    "pizza": "🍕",
+    "cake": "🍰",
+    "salad": "🥗",
+    "pasta": "🍝",
+    "burger": "🍔",
+    "sushi": "🍣",
+    "taco": "🌮",
+    "ice cream": "🍦",
+    "bread": "🍞",
+    "soup": "🍲",
+    "steak": "🥩",
+    "chicken": "🍗",
+    "fish": "🐟",
+    "rice": "🍚",
+    "pancake": "🥞",
+    "cookie": "🍪",
+    "pie": "🥧",
+    "donut": "🍩",
+    "coffee": "☕",
+    "tea": "🍵",
+    "smoothie": "🥤",
+    "juice": "🧃",
+    "wine": "🍷",
+    "beer": "🍺",
+    "cocktail": "🍹",
+}
+
+# Function to get a dynamic emoji based on the recipe name
+def get_dynamic_emoji(recipe_name):
+    recipe_name_lower = recipe_name.lower()
+    for keyword, emoji in EMOJI_MAPPING.items():
+        if keyword in recipe_name_lower:
+            return emoji
+    return "🍳"  # Default emoji for recipes
+
 # Function to generate a recipe post using Gemini API
 def generate_recipe_post_gemini(recipe_name_or_text, language):
     try:
@@ -19,8 +56,11 @@ def generate_recipe_post_gemini(recipe_name_or_text, language):
             "Content-Type": "application/json"
         }
         
+        # Get dynamic emoji for the recipe title
+        emoji = get_dynamic_emoji(recipe_name_or_text)
+        
         prompt = f"{LANGUAGES[language]}\n\n"
-        prompt += "🧁✨ [Recipe Name] ✨🧁\n\n"
+        prompt += f"{emoji}✨ {recipe_name_or_text} ✨{emoji}\n\n"
         prompt += "Ingredients:\n\n"
         prompt += "For [Component 1]:\n"
         prompt += "- [Ingredient 1]\n"
