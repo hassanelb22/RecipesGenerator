@@ -88,7 +88,7 @@ Here’s a well-structured and professional `README.md` file for your **RecipesG
 To use the app, you need API keys for both DeepSeek and Gemini. Enter your API keys in the sidebar of the app.
 
 - **DeepSeek API Key**: Obtain it from [DeepSeek](https://www.deepseek.com/).
-- **Gemini API Key**: Obtain it from [Gemini](https://developers.generativelanguage.google/).
+- **Gemini API Key**: Obtain it from [Gemini]([https://developers.generativelanguage.google/](https://aistudio.google.com/app/apikey)).
 
 ---
 
@@ -163,5 +163,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 Enjoy cooking with **RecipesGenerator**! 🍳✨
 
 ---
-
-You can customize this `README.md` further if needed. Let me know if you need any additional changes! 😊
