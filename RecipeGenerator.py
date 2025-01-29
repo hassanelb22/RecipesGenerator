@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 from PIL import Image
 
+
 # API configurations
 DEEPSEEK_API_URL = "https://api.deepseek.com/v1/recipe/generate"  # Replace with actual DeepSeek API endpoint
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
