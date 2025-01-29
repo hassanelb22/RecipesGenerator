@@ -4,24 +4,21 @@ from PIL import Image
 
 # API configurations
 DEEPSEEK_API_URL = "https://api.deepseek.com/v1/recipe/generate"  # Replace with actual DeepSeek API endpoint
-DEEPSEEK_API_KEY = "your_deepseek_api_key_here"  # Replace with your DeepSeek API key
-
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
-GEMINI_API_KEY = "AIzaSyDm_pgjR4LrAUiMQ4MC3t8jUiIEXWGf5W8"  # Replace with your Gemini API key
 
 # Language options
 LANGUAGES = {
-    "English": "Generate a detailed recipe post in English in the following structured format:",
-    "Spanish": "Genera una publicación detallada de una receta en español en el siguiente formato estructurado:",
-    "German": "Erstellen Sie einen detaillierten Rezeptbeitrag auf Deutsch im folgenden strukturierten Format:",
-    "French": "Générez une publication détaillée de recette en français dans le format structuré suivant:"
+    "🇬🇧 English": "Generate a detailed recipe post in English in the following structured format:",
+    "🇪🇸 Spanish": "Genera una publicación detallada de una receta en español en el siguiente formato estructurado:",
+    "🇩🇪 German": "Erstellen Sie einen detaillierten Rezeptbeitrag auf Deutsch im folgenden strukturierten Format:",
+    "🇫🇷 French": "Générez une publicación détaillée de recette en français dans le format structuré suivant:"
 }
 
 # Function to generate a recipe post using DeepSeek API
 def generate_recipe_post_deepseek(recipe_name_or_text, language):
     try:
         headers = {
-            "Authorization": f"Bearer {DEEPSEEK_API_KEY}",
+            "Authorization": f"Bearer {st.session_state.deepseek_api_key}",
             "Content-Type": "application/json"
         }
         prompt = f"{LANGUAGES[language]}\n\n"
@@ -83,7 +80,7 @@ def generate_recipe_post_gemini(recipe_name_or_text, language):
             }]
         }
         params = {
-            "key": GEMINI_API_KEY
+            "key": st.session_state.gemini_api_key
         }
         response = requests.post(GEMINI_API_URL, headers=headers, json=payload, params=params)
         if response.status_code == 200:
@@ -127,14 +124,27 @@ def main():
     # Language selection
     language = st.sidebar.selectbox("Select Language:", list(LANGUAGES.keys()))
 
+    # API Key Input
+    st.sidebar.subheader("API Keys")
+    deepseek_api_key = st.sidebar.text_input("Enter your DeepSeek API Key:", type="password")
+    gemini_api_key = st.sidebar.text_input("Enter your Gemini API Key:", type="password")
+
+    if deepseek_api_key:
+        st.session_state.deepseek_api_key = deepseek_api_key
+    if gemini_api_key:
+        st.session_state.gemini_api_key = gemini_api_key
+
     if option == "Enter Recipe Name":
         recipe_name = st.text_input("Enter the recipe name:")
         if st.button("Generate Recipe"):
             if recipe_name:
-                recipe_post = generate_recipe_post(recipe_name, language)
-                if recipe_post:
-                    st.subheader("Generated Recipe Post:")
-                    st.write(recipe_post)
+                if 'deepseek_api_key' not in st.session_state or 'gemini_api_key' not in st.session_state:
+                    st.warning("Please enter both API keys.")
+                else:
+                    recipe_post = generate_recipe_post(recipe_name, language)
+                    if recipe_post:
+                        st.subheader("Generated Recipe Post:")
+                        st.write(recipe_post)
             else:
                 st.warning("Please enter a recipe name.")
 
@@ -144,16 +154,19 @@ def main():
             image = Image.open(uploaded_file)
             st.image(image, caption="Uploaded Image", use_column_width=True)
             if st.button("Extract Text and Generate Recipe"):
-                extracted_text = extract_text_from_image(image)
-                if extracted_text:
-                    st.subheader("Extracted Text:")
-                    st.write(extracted_text)
-                    recipe_post = generate_recipe_post(extracted_text, language)
-                    if recipe_post:
-                        st.subheader("Generated Recipe Post:")
-                        st.write(recipe_post)
+                if 'deepseek_api_key' not in st.session_state or 'gemini_api_key' not in st.session_state:
+                    st.warning("Please enter both API keys.")
                 else:
-                    st.error("Failed to extract text from the image.")
+                    extracted_text = extract_text_from_image(image)
+                    if extracted_text:
+                        st.subheader("Extracted Text:")
+                        st.write(extracted_text)
+                        recipe_post = generate_recipe_post(extracted_text, language)
+                        if recipe_post:
+                            st.subheader("Generated Recipe Post:")
+                            st.write(recipe_post)
+                    else:
+                        st.error("Failed to extract text from the image.")
 
 if __name__ == "__main__":
     main()
