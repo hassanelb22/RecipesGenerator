@@ -102,21 +102,19 @@ def generate_recipe_post_gemini(recipe_name_or_text, language):
 # Streamlit app
 def main():
     st.title("🍳 Recipe Post Generator 🍳")
-    st.sidebar.title("Options")
-
-    # Language selection
-    language = st.sidebar.selectbox("Select Language:", list(LANGUAGES.keys()))
 
     # API Key Input
-    st.sidebar.subheader("API Key")
-    gemini_api_key = st.sidebar.text_input("Enter your Gemini API Key:", type="password", value=st.session_state.get("gemini_api_key", ""))
+    gemini_api_key = st.text_input("Enter your Gemini API Key:", type="password", value=st.session_state.get("gemini_api_key", ""))
 
     if gemini_api_key:
         st.session_state.gemini_api_key = gemini_api_key
 
     # Recipe name input
     recipe_name = st.text_input("Enter the recipe name:")
-    
+
+    # Language selection
+    language = st.selectbox("Select Language:", list(LANGUAGES.keys()))
+
     if st.button("Generate Recipe"):
         if recipe_name:
             if 'gemini_api_key' not in st.session_state:
