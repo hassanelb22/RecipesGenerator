@@ -13,7 +13,7 @@ LANGUAGES = {
     "🇬🇧 English": "Generate a detailed recipe post in English in the following structured format:",
     "🇪🇸 Spanish": "Genera una publicación detallada de una receta en español en el siguiente formato estructurado:",
     "🇩🇪 German": "Erstellen Sie einen detaillierten Rezeptbeitrag auf Deutsch im folgenden strukturierten Format:",
-    "🇫🇷 French": "Générez una publicación detallada de recette en français dans le format structuré suivant:"
+    "🇫🇷 French": "Générez une publication détaillée de recette en français dans le format structuré suivant:"
 }
 
 # Emoji mapping based on recipe keywords
@@ -121,24 +121,9 @@ def main():
 
     # Custom HTML for API Key Input Label
     st.markdown("""
-        <style>
-            .api-key-label {
-                font-size: 14px;
-                font-weight: 500;
-                color: #374151;
-                margin-bottom: 8px;
-            }
-            .api-key-link {
-                font-size: 12px;
-                color: #f97316;
-                margin-left: 8px;
-            }
-            .api-key-link:hover {
-                color: #ea580c;
-            }
-        </style>
+
         <label class="api-key-label">
-            Google GEMINI API Key
+            Enter your Gemini API Key
             <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="api-key-link">
                 Get your API key here →
             </a>
