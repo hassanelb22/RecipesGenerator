@@ -60,7 +60,7 @@ def generate_recipe_post_gemini(recipe_name_or_text, language):
         emoji = get_dynamic_emoji(recipe_name_or_text)
         
         prompt = f"{LANGUAGES[language]}\n\n"
-        prompt += f"{emoji}✨ {recipe_name_or_text} ✨{emoji}\n\n"
+        prompt += f"{emoji} {recipe_name_or_text} {emoji}\n\n"
         prompt += "Ingredients:\n\n"
         prompt += "For [Component 1]:\n"
         prompt += "- [Ingredient 1]\n"
