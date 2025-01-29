@@ -103,8 +103,34 @@ def generate_recipe_post_gemini(recipe_name_or_text, language):
 def main():
     st.title("🍳 Recipe Post Generator 🍳")
 
+    # Custom HTML for API Key Input Label
+    st.markdown("""
+        <style>
+            .api-key-label {
+                font-size: 14px;
+                font-weight: 500;
+                color: #374151;
+                margin-bottom: 8px;
+            }
+            .api-key-link {
+                font-size: 12px;
+                color: #f97316;
+                margin-left: 8px;
+            }
+            .api-key-link:hover {
+                color: #ea580c;
+            }
+        </style>
+        <label class="api-key-label">
+            Google GEMINI API Key
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="api-key-link">
+                Get your API key here →
+            </a>
+        </label>
+    """, unsafe_allow_html=True)
+
     # API Key Input
-    gemini_api_key = st.text_input("Enter your Gemini API Key:", type="password", value=st.session_state.get("gemini_api_key", ""))
+    gemini_api_key = st.text_input("", type="password", value=st.session_state.get("gemini_api_key", ""), key="apiKey")
 
     if gemini_api_key:
         st.session_state.gemini_api_key = gemini_api_key
