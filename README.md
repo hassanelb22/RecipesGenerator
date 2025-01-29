@@ -1,4 +1,5 @@
-Here’s a well-structured and professional `README.md` file for your **RecipesGenerator** project. You can copy and paste this into your GitHub repository:
+![image](https://github.com/user-attachments/assets/99fa496e-37ff-4ae9-b239-ac7e9f19dd74)
+
 
 ---
 
