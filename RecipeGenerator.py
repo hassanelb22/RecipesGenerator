@@ -107,7 +107,7 @@ def main():
     st.markdown("""
         
         <label class="api-key-label">
-            Google GEMINI API Key
+            Enter your Gemini API Key
             <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="api-key-link">
                 Get your API key here →
             </a>
