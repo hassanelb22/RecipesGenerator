@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 from PIL import Image
-
+import pytesseract
 
 # API configurations
 DEEPSEEK_API_URL = "https://api.deepseek.com/v1/recipe/generate"  # Replace with actual DeepSeek API endpoint
@@ -12,7 +12,7 @@ LANGUAGES = {
     "🇬🇧 English": "Generate a detailed recipe post in English in the following structured format:",
     "🇪🇸 Spanish": "Genera una publicación detallada de una receta en español en el siguiente formato estructurado:",
     "🇩🇪 German": "Erstellen Sie einen detaillierten Rezeptbeitrag auf Deutsch im folgenden strukturierten Format:",
-    "🇫🇷 French": "Générez une publicación détaillée de recette en français dans le format structuré suivant:"
+    "🇫🇷 French": "Générez une publication détaillée de recette en français dans le format structuré suivant:"
 }
 
 # Function to generate a recipe post using DeepSeek API
@@ -37,12 +37,15 @@ def generate_recipe_post_deepseek(recipe_name_or_text, language):
         prompt += "Nutritional Information:\n\n"
         prompt += "⏰ Prep Time: [Time] | Cooking Time: [Time] | Total Time: [Time]\n"
         prompt += "🔥 Kcal: [Calories] | 🍽️ Servings: [Servings]"
+        
         payload = {
             "prompt": f"{prompt}\n\n{recipe_name_or_text}",
             "max_tokens": 500,
             "temperature": 0.7
         }
+        
         response = requests.post(DEEPSEEK_API_URL, headers=headers, json=payload)
+        
         if response.status_code == 200:
             return response.json().get("choices", [{}])[0].get("text", "").strip()
         else:
@@ -58,6 +61,7 @@ def generate_recipe_post_gemini(recipe_name_or_text, language):
         headers = {
             "Content-Type": "application/json"
         }
+        
         prompt = f"{LANGUAGES[language]}\n\n"
         prompt += "🧁✨ [Recipe Name] ✨🧁\n\n"
         prompt += "Ingredients:\n\n"
@@ -73,6 +77,7 @@ def generate_recipe_post_gemini(recipe_name_or_text, language):
         prompt += "Nutritional Information:\n\n"
         prompt += "⏰ Prep Time: [Time] | Cooking Time: [Time] | Total Time: [Time]\n"
         prompt += "🔥 Kcal: [Calories] | 🍽️ Servings: [Servings]"
+        
         payload = {
             "contents": [{
                 "parts": [{
@@ -80,12 +85,14 @@ def generate_recipe_post_gemini(recipe_name_or_text, language):
                 }]
             }]
         }
+        
         params = {
             "key": st.session_state.gemini_api_key
         }
+        
         response = requests.post(GEMINI_API_URL, headers=headers, json=payload, params=params)
+        
         if response.status_code == 200:
-            # Extract the generated text from the response
             generated_text = response.json().get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "").strip()
             return generated_text
         else:
@@ -106,41 +113,49 @@ def extract_text_from_image(image):
 
 # Main function to generate recipe post using both APIs
 def generate_recipe_post(recipe_name_or_text, language):
-    # Try DeepSeek API first
-    recipe_post = generate_recipe_post_deepseek(recipe_name_or_text, language)
-    if not recipe_post:
-        st.warning("DeepSeek API failed. Trying Gemini API...")
-        # Fallback to Gemini API
+    if st.session_state.deepseek_active:
+        recipe_post = generate_recipe_post_deepseek(recipe_name_or_text, language)
+        if recipe_post:
+            return recipe_post
+    if st.session_state.gemini_active:
+        st.warning("DeepSeek API failed or is inactive. Trying Gemini API...")
         recipe_post = generate_recipe_post_gemini(recipe_name_or_text, language)
-    return recipe_post
+        if recipe_post:
+            return recipe_post
+    return None
 
 # Streamlit app
 def main():
     st.title("🍳 Recipe Post Generator 🍳")
     st.sidebar.title("Options")
 
-    # User choice: Upload image or enter recipe name
     option = st.sidebar.radio("Choose an option:", ("Enter Recipe Name", "Upload Image"))
 
-    # Language selection
     language = st.sidebar.selectbox("Select Language:", list(LANGUAGES.keys()))
 
-    # API Key Input
+    # API Key Input and Activation Toggles
     st.sidebar.subheader("API Keys")
-    deepseek_api_key = st.sidebar.text_input("Enter your DeepSeek API Key:", type="password")
-    gemini_api_key = st.sidebar.text_input("Enter your Gemini API Key:", type="password")
+    deepseek_api_key = st.sidebar.text_input("Enter your DeepSeek API Key:", type="password", value=st.session_state.get("deepseek_api_key", ""))
+    gemini_api_key = st.sidebar.text_input("Enter your Gemini API Key:", type="password", value=st.session_state.get("gemini_api_key", ""))
+
+    deepseek_active = st.sidebar.checkbox("Activate DeepSeek API", value=st.session_state.get("deepseek_active", True))
+    gemini_active = st.sidebar.checkbox("Activate Gemini API", value=st.session_state.get("gemini_active", True))
 
     if deepseek_api_key:
         st.session_state.deepseek_api_key = deepseek_api_key
     if gemini_api_key:
         st.session_state.gemini_api_key = gemini_api_key
 
+    st.session_state.deepseek_active = deepseek_active
+    st.session_state.gemini_active = gemini_active
+
     if option == "Enter Recipe Name":
         recipe_name = st.text_input("Enter the recipe name:")
+        
         if st.button("Generate Recipe"):
             if recipe_name:
-                if 'deepseek_api_key' not in st.session_state or 'gemini_api_key' not in st.session_state:
-                    st.warning("Please enter both API keys.")
+                if ('deepseek_api_key' not in st.session_state or 'gemini_api_key' not in st.session_state) or (not st.session_state.deepseek_active and not st.session_state.gemini_active):
+                    st.warning("Please enter and activate at least one API key.")
                 else:
                     recipe_post = generate_recipe_post(recipe_name, language)
                     if recipe_post:
@@ -148,15 +163,17 @@ def main():
                         st.write(recipe_post)
             else:
                 st.warning("Please enter a recipe name.")
-
+    
     elif option == "Upload Image":
         uploaded_file = st.file_uploader("Upload an image of the recipe:", type=["jpg", "jpeg", "png"])
+        
         if uploaded_file is not None:
             image = Image.open(uploaded_file)
             st.image(image, caption="Uploaded Image", use_column_width=True)
+            
             if st.button("Extract Text and Generate Recipe"):
-                if 'deepseek_api_key' not in st.session_state or 'gemini_api_key' not in st.session_state:
-                    st.warning("Please enter both API keys.")
+                if ('deepseek_api_key' not in st.session_state or 'gemini_api_key' not in st.session_state) or (not st.session_state.deepseek_active and not st.session_state.gemini_active):
+                    st.warning("Please enter and activate at least one API key.")
                 else:
                     extracted_text = extract_text_from_image(image)
                     if extracted_text:
