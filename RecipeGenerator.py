@@ -105,22 +105,7 @@ def main():
 
     # Custom HTML for API Key Input Label
     st.markdown("""
-        <style>
-            .api-key-label {
-                font-size: 14px;
-                font-weight: 500;
-                color: #374151;
-                margin-bottom: 8px;
-            }
-            .api-key-link {
-                font-size: 12px;
-                color: #f97316;
-                margin-left: 8px;
-            }
-            .api-key-link:hover {
-                color: #ea580c;
-            }
-        </style>
+        
         <label class="api-key-label">
             Google GEMINI API Key
             <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="api-key-link">
