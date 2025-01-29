@@ -89,7 +89,7 @@
 To use the app, you need API keys for both DeepSeek and Gemini. Enter your API keys in the sidebar of the app.
 
 - **DeepSeek API Key**: Obtain it from [DeepSeek](https://www.deepseek.com/).
-- **Gemini API Key**: Obtain it from [Gemini]([https://developers.generativelanguage.google/](https://aistudio.google.com/app/apikey)).
+- **Gemini API Key**: Obtain it from [Gemini](https://developers.generativelanguage.google/](https://aistudio.google.com/app/apikey)).
 
 ---
 
