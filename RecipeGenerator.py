@@ -1,45 +1,6 @@
 import streamlit as st
 import requests
 
-# Custom CSS for the API key input field
-st.markdown(
-    """
-    <style>
-    .api-key-container {
-        position: relative;
-        width: 100%;
-    }
-    .api-key-container input {
-        width: 100%;
-        padding: 0.5rem 1rem;
-        border-radius: 0.375rem;
-        border: 1px solid #d1d5db;
-        outline: none;
-        font-size: 1rem;
-    }
-    .api-key-container input:focus {
-        border-color: #f97316;
-        box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.5);
-    }
-    .api-key-container button {
-        position: absolute;
-        right: 0.5rem;
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: none;
-        color: #6b7280;
-        cursor: pointer;
-        font-size: 0.875rem;
-    }
-    .api-key-container button:hover {
-        color: #374151;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
 # API configurations
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
 
@@ -146,20 +107,9 @@ def main():
     # Language selection
     language = st.sidebar.selectbox("Select Language:", list(LANGUAGES.keys()))
 
-    # API Key Input with custom styling
+    # API Key Input
     st.sidebar.subheader("API Key")
-    st.markdown(
-        """
-        <div class="api-key-container" bis_skin_checked="1">
-            <input id="apiKey" type="text" placeholder="Enter your Google API key" class="w-full px-4 py-2 rounded-md border border-gray-200 focus:ring-2 focus:ring-orange-500 focus:border-transparent" required="" value="">
-            <button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700">Hide</button>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # Use Streamlit's text_input for actual functionality
-    gemini_api_key = st.sidebar.text_input("", type="password", key="gemini_api_key", label_visibility="collapsed")
+    gemini_api_key = st.sidebar.text_input("Enter your Gemini API Key:", type="password", value=st.session_state.get("gemini_api_key", ""))
 
     if gemini_api_key:
         st.session_state.gemini_api_key = gemini_api_key
