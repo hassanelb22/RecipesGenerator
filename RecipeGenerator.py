@@ -1,6 +1,5 @@
 import streamlit as st
 import requests
-import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
 # Google Sheets API setup
