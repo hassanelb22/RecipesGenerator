@@ -84,7 +84,7 @@ def generate_recipe_post_gemini(recipe_name_or_text, language):
         }
         
         params = {
-            "key": st.secrets["gemini_api_key"]  # Read API key from secrets
+            "key": st.session_state.gemini_api_key
         }
         
         response = requests.post(GEMINI_API_URL, headers=headers, json=payload, params=params)
@@ -105,6 +105,7 @@ def main():
 
     # Custom HTML for API Key Input Label
     st.markdown("""
+        
         <label class="api-key-label">
             Google GEMINI API Key
             <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="api-key-link">
@@ -112,6 +113,12 @@ def main():
             </a>
         </label>
     """, unsafe_allow_html=True)
+
+    # API Key Input
+    gemini_api_key = st.text_input("", type="password", value=st.session_state.get("gemini_api_key", ""), key="apiKey")
+
+    if gemini_api_key:
+        st.session_state.gemini_api_key = gemini_api_key
 
     # Recipe name input
     recipe_name = st.text_input("Enter the recipe name:")
@@ -121,8 +128,8 @@ def main():
 
     if st.button("Generate Recipe"):
         if recipe_name:
-            if "gemini_api_key" not in st.secrets:
-                st.warning("Please add your Gemini API key to the secrets file.")
+            if 'gemini_api_key' not in st.session_state:
+                st.warning("Please enter your Gemini API key.")
             else:
                 recipe_post = generate_recipe_post_gemini(recipe_name, language)
                 if recipe_post:
