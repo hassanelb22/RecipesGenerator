@@ -129,8 +129,6 @@ def main():
         </style>
     """, unsafe_allow_html=True)
 
-    # Debugging: Print the contents of st.secrets
-    st.write("Secrets:", st.secrets)
 
     # Password check
     if 'authenticated' not in st.session_state:
