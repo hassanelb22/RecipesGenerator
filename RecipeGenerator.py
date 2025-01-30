@@ -113,19 +113,10 @@ def main():
         </label>
     """, unsafe_allow_html=True)
 
-    # JavaScript to save API key to localStorage
-    st.markdown("""
-        <script>
-        function saveApiKey() {
-            const apiKey = document.getElementById("apiKey").value;
-            localStorage.setItem("gemini_api_key", apiKey);
-        }
-        </script>
-    """, unsafe_allow_html=True)
-
     # JavaScript to load API key from localStorage
     st.markdown("""
         <script>
+        // Load API key from localStorage when the page loads
         function loadApiKey() {
             const apiKey = localStorage.getItem("gemini_api_key");
             if (apiKey) {
@@ -133,13 +124,19 @@ def main():
             }
         }
         window.onload = loadApiKey;
+
+        // Save API key to localStorage when the input changes
+        function saveApiKey() {
+            const apiKey = document.getElementById("apiKey").value;
+            localStorage.setItem("gemini_api_key", apiKey);
+        }
         </script>
     """, unsafe_allow_html=True)
 
     # API Key Input
     gemini_api_key = st.text_input("", type="password", value="", key="apiKey", on_change=None)
 
-    # Save API key to localStorage when the user submits the form
+    # Save API key to localStorage when the user inputs it
     if gemini_api_key:
         st.session_state.gemini_api_key = gemini_api_key
         st.markdown(f"""
