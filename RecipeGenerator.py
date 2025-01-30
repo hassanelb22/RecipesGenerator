@@ -105,7 +105,6 @@ def main():
 
     # Custom HTML for API Key Input Label
     st.markdown("""
-        
         <label class="api-key-label">
             Google GEMINI API Key
             <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="api-key-link">
@@ -114,8 +113,31 @@ def main():
         </label>
     """, unsafe_allow_html=True)
 
+    # JavaScript to save API key to localStorage
+    st.markdown("""
+        <script>
+        function saveApiKey() {
+            const apiKey = document.getElementById("apiKey").value;
+            localStorage.setItem("gemini_api_key", apiKey);
+        }
+        </script>
+    """, unsafe_allow_html=True)
+
+    # JavaScript to load API key from localStorage
+    st.markdown("""
+        <script>
+        function loadApiKey() {
+            const apiKey = localStorage.getItem("gemini_api_key");
+            if (apiKey) {
+                document.getElementById("apiKey").value = apiKey;
+            }
+        }
+        window.onload = loadApiKey;
+        </script>
+    """, unsafe_allow_html=True)
+
     # API Key Input
-    gemini_api_key = st.text_input("", type="password", value=st.session_state.get("gemini_api_key", ""), key="apiKey")
+    gemini_api_key = st.text_input("", type="password", value="", key="apiKey", onchange="saveApiKey()")
 
     if gemini_api_key:
         st.session_state.gemini_api_key = gemini_api_key
