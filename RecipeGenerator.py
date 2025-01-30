@@ -1,7 +1,6 @@
 import streamlit as st
 import requests
 import os
-password = os.getenv("PASSWORD")
 
 # API configurations
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
@@ -138,11 +137,15 @@ def main():
     if not st.session_state.authenticated:
         password_input = st.text_input("Enter Password:", type="password")
         if password_input:
-            if password_input == st.secrets["password"]:
-                st.session_state.authenticated = True
-                st.experimental_rerun()
+            # Debugging: Check if the password key exists in st.secrets
+            if "password" not in st.secrets:
+                st.error("Password key is missing in secrets. Please check your secrets configuration.")
             else:
-                st.error("Incorrect password. Please try again.")
+                if password_input == st.secrets["password"]:
+                    st.session_state.authenticated = True
+                    st.experimental_rerun()
+                else:
+                    st.error("Incorrect password. Please try again.")
         return
 
     # Logo container with your logo
