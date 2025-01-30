@@ -99,9 +99,14 @@ def generate_recipe_post_gemini(recipe_name_or_text, language):
         st.error(f"Error generating recipe post with Gemini: {e}")
         return None
 
-# Function to generate MidJourney prompt
-def generate_midjourney_prompt(recipe):
+# Function to generate MidJourney prompt (Version 1)
+def generate_midjourney_prompt_v1(recipe):
     prompt = f"{recipe} STYLE: amateur Close-up Shot | EMOTION: Tempting | SCENE: kitchen | TAGS: amateur food photography, clean composition, dramatic lighting, mouth-watering | CAMERA: iphone 15 pro max | SHOT TYPE: Close-up | COMPOSITION: top side view Centered | LIGHTING: Soft directional light | TIME: Daytime | LOCATION TYPE: Kitchen near windows --ar 1:1"
+    return prompt
+
+# Function to generate MidJourney prompt (Version 2)
+def generate_midjourney_prompt_v2(recipe):
+    prompt = f"Capture the essence of This Light and refreshing, {recipe}. Make our readers crave a bite just by looking at your photo. We want to see it in all its mouthwatering glory, ready to inspire cooks and bakers alike. Get creative with your composition, lighting, and styling. Make it look Realistic, camera: iphone, V6"
     return prompt
 
 # Streamlit app
@@ -206,15 +211,27 @@ def main():
                     st.subheader("Generated Recipe Post:")
                     st.write(recipe_post)
 
-                    # Generate MidJourney Prompt
-                    midjourney_prompt = generate_midjourney_prompt(recipe_name)
-                    st.subheader("MidJourney Prompt:")
-                    st.code(midjourney_prompt, language="text")
+                    # Generate MidJourney Prompt (Version 1)
+                    midjourney_prompt_v1 = generate_midjourney_prompt_v1(recipe_name)
+                    st.subheader("MidJourney Prompt (Version 1):")
+                    st.code(midjourney_prompt_v1, language="text")
 
-                    # Copy to Clipboard Button
+                    # Copy to Clipboard Button for Version 1
                     st.markdown(f"""
-                        <button onclick="navigator.clipboard.writeText(`{midjourney_prompt}`)" style="margin-top: 10px;">
-                            Copy MidJourney Prompt to Clipboard
+                        <button onclick="navigator.clipboard.writeText(`{midjourney_prompt_v1}`)" style="margin-top: 10px;">
+                            Copy MidJourney Prompt (Version 1) to Clipboard
+                        </button>
+                    """, unsafe_allow_html=True)
+
+                    # Generate MidJourney Prompt (Version 2)
+                    midjourney_prompt_v2 = generate_midjourney_prompt_v2(recipe_name)
+                    st.subheader("MidJourney Prompt (Version 2):")
+                    st.code(midjourney_prompt_v2, language="text")
+
+                    # Copy to Clipboard Button for Version 2
+                    st.markdown(f"""
+                        <button onclick="navigator.clipboard.writeText(`{midjourney_prompt_v2}`)" style="margin-top: 10px;">
+                            Copy MidJourney Prompt (Version 2) to Clipboard
                         </button>
                     """, unsafe_allow_html=True)
         else:
