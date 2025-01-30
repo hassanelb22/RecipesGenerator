@@ -117,17 +117,38 @@ def load_api_key():
 
 # Streamlit app
 def main():
-    st.title("🍳 Recipe Post Generator 🍳")
-
-    # Custom HTML for API Key Input Label
+    # Custom HTML and CSS for the logo and stylish font
     st.markdown("""
-
-        <label class="api-key-label">
-            Enter your Gemini API Key
-            <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="api-key-link">
-                Get your API key here →
-            </a>
-        </label>
+        <style>
+            .logo {
+                font-family: 'Pacifico', cursive;
+                font-size: 48px;
+                text-align: center;
+                color: #FF6347;
+                margin-bottom: 20px;
+            }
+            .logo span {
+                color: #FFA500;
+            }
+            .api-key-label {
+                font-size: 14px;
+                font-weight: 500;
+                color: #374151;
+                margin-bottom: 8px;
+            }
+            .api-key-link {
+                font-size: 12px;
+                color: #f97316;
+                margin-left: 8px;
+            }
+            .api-key-link:hover {
+                color: #ea580c;
+            }
+            @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+        </style>
+        <div class="logo">
+            <span>🍳</span> Recipe Post Generator <span>🍳</span>
+        </div>
     """, unsafe_allow_html=True)
 
     # Load API key from file
@@ -135,6 +156,14 @@ def main():
         st.session_state.gemini_api_key = load_api_key() or ""
 
     # API Key Input
+    st.markdown("""
+        <label class="api-key-label">
+            Enter your Gemini API Key
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="api-key-link">
+                Get your API key here →
+            </a>
+        </label>
+    """, unsafe_allow_html=True)
     gemini_api_key = st.text_input("", type="password", value=st.session_state.gemini_api_key, key="apiKey")
 
     # Save API key to file when it changes
