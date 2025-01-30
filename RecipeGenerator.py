@@ -126,12 +126,6 @@ def main():
     if gemini_api_key:
         st.session_state.gemini_api_key = gemini_api_key
 
-    # API Key Input for DeepSeek
-    deepseek_api_key = st.text_input("", type="password", value=st.session_state.deepseek_api_key, key="deepseek_api_key_input", placeholder="Enter your DeepSeek API Key:")
-    
-    # Save DeepSeek API Key to session state
-    if deepseek_api_key:
-        st.session_state.deepseek_api_key = deepseek_api_key
 
     # Recipe name input
     recipe_name = st.text_input("Enter the recipe name:")
