@@ -7,7 +7,7 @@ GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini
 # Language options
 LANGUAGES = {
     "🇬🇧 English": "Generate a detailed recipe post in English in the following structured format:",
-    "🇪🇸 Spanish": "Genera una publicación detallada de una receta en español en el siguiente formato estructurado:",
+    "🇪🇸 Spanish": "Genera una publicación detallada de una receta en español en el siguiente formato estructuré:",
     "🇩🇪 German": "Erstellen Sie einen detaillierten Rezeptbeitrag auf Deutsch im folgenden strukturierten Format:",
     "🇫🇷 French": "Générez una publicación detallada de recette en français dans le format structuré suivant:"
 }
@@ -126,6 +126,31 @@ def main():
         .spacer {
             margin-top: 30px; /* Space between recipe and MidJourney prompts */
         }
+        .facebook-post {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            background-color: #fff;
+        }
+        .facebook-post .reactions {
+            display: flex;
+            align-items: center;
+            margin-top: 8px;
+        }
+        .facebook-post .reactions .like,
+        .facebook-post .reactions .comment,
+        .facebook-post .reactions .share {
+            display: flex;
+            align-items: center;
+            margin-right: 16px;
+            color: #606770;
+        }
+        .facebook-post .reactions .like i,
+        .facebook-post .reactions .comment i,
+        .facebook-post .reactions .share i {
+            margin-right: 4px;
+        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -212,7 +237,22 @@ def main():
                 recipe_post = generate_recipe_post_gemini(recipe_name, language)
                 if recipe_post:
                     st.subheader("Generated Recipe Post:")
-                    st.write(recipe_post)
+                    st.markdown(f"""
+                        <div class="facebook-post">
+                            <p>{recipe_post}</p>
+                            <div class="reactions">
+                                <div class="like">
+                                    <i>👍</i> 123
+                                </div>
+                                <div class="comment">
+                                    <i>💬</i> 45
+                                </div>
+                                <div class="share">
+                                    <i>🔗</i> 67
+                                </div>
+                            </div>
+                        </div>
+                    """, unsafe_allow_html=True)
 
                     # Add space between recipe and MidJourney prompts
                     st.markdown('<div class="spacer"></div>', unsafe_allow_html=True)
