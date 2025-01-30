@@ -1,6 +1,5 @@
 import streamlit as st
 import requests
-from oauth2client.service_account import ServiceAccountCredentials
 
 # Google Sheets API setup
 def connect_to_google_sheet(sheet_name, json_keyfile):
