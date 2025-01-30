@@ -1,55 +1,17 @@
 import streamlit as st
 import requests
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
-# API configurations
-GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+# Google Sheets API setup
+def connect_to_google_sheet(sheet_name, json_keyfile):
+    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+    creds = ServiceAccountCredentials.from_json_keyfile_name(json_keyfile, scope)
+    client = gspread.authorize(creds)
+    sheet = client.open(sheet_name).sheet1  # Use the first sheet
+    return sheet
 
-# Language options
-LANGUAGES = {
-    "🇬🇧 English": "Generate a detailed recipe post in English in the following structured format:",
-    "🇪🇸 Spanish": "Genera una publicación detallada de una receta en español en el siguiente formato estructurado:",
-    "🇩🇪 German": "Erstellen Sie einen detaillierten Rezeptbeitrag auf Deutsch im folgenden strukturierten Format:",
-    "🇫🇷 French": "Générez una publicación detallada de recette en français dans le format structuré suivant:"
-}
-
-# Emoji mapping based on recipe keywords
-EMOJI_MAPPING = {
-    "pizza": "🍕",
-    "cake": "🍰",
-    "salad": "🥗",
-    "pasta": "🍝",
-    "burger": "🍔",
-    "sushi": "🍣",
-    "taco": "🌮",
-    "ice cream": "🍦",
-    "bread": "🍞",
-    "soup": "🍲",
-    "steak": "🥩",
-    "chicken": "🍗",
-    "fish": "🐟",
-    "rice": "🍚",
-    "pancake": "🥞",
-    "cookie": "🍪",
-    "pie": "🥧",
-    "donut": "🍩",
-    "coffee": "☕",
-    "tea": "🍵",
-    "smoothie": "🥤",
-    "juice": "🧃",
-    "wine": "🍷",
-    "beer": "🍺",
-    "cocktail": "🍹",
-}
-
-# Function to get a dynamic emoji based on the recipe name
-def get_dynamic_emoji(recipe_name):
-    recipe_name_lower = recipe_name.lower()
-    for keyword, emoji in EMOJI_MAPPING.items():
-        if keyword in recipe_name_lower:
-            return emoji
-    return "🍳"  # Default emoji for recipes
-
-# Function to generate a recipe post using Gemini API
+# Function to generate recipe post using Gemini API
 def generate_recipe_post_gemini(recipe_name_or_text, language):
     try:
         headers = {
@@ -99,16 +61,6 @@ def generate_recipe_post_gemini(recipe_name_or_text, language):
         st.error(f"Error generating recipe post with Gemini: {e}")
         return None
 
-# Function to generate MidJourney prompt (Version 1)
-def generate_midjourney_prompt_v1(recipe):
-    prompt = f"{recipe} STYLE: amateur Close-up Shot | EMOTION: Tempting | SCENE: kitchen | TAGS: amateur food photography, clean composition, dramatic lighting, mouth-watering | CAMERA: iphone 15 pro max | SHOT TYPE: Close-up | COMPOSITION: top side view Centered | LIGHTING: Soft directional light | TIME: Daytime | LOCATION TYPE: Kitchen near windows --ar 1:1"
-    return prompt
-
-# Function to generate MidJourney prompt (Version 2)
-def generate_midjourney_prompt_v2(recipe):
-    prompt = f"Capture the essence of This Light and refreshing, {recipe}. Make our readers crave a bite just by looking at your photo. We want to see it in all its mouthwatering glory, ready to inspire cooks and bakers alike. Get creative with your composition, lighting, and styling. Make it look Realistic, camera: iphone, V6"
-    return prompt
-
 # Streamlit app
 def main():
     # Custom CSS to center the logo
@@ -141,7 +93,7 @@ def main():
             else:
                 if password_input == st.secrets["password"]:
                     st.session_state.authenticated = True
-                    st.rerun()  # Use st.rerun() instead of st.experimental_rerun()
+                    st.rerun()
                 else:
                     st.error("Incorrect password. Please try again.")
         return
@@ -154,111 +106,34 @@ def main():
         unsafe_allow_html=True
     )
 
-    # Custom HTML for API Key Input Label
-    st.markdown("""
-        <label class="api-key-label">
-            Google GEMINI API Key
-            <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="api-key-link">
-                Get your API key here →
-            </a>
-        </label>
-    """, unsafe_allow_html=True)
+    # Google Sheets integration
+    st.subheader("Google Sheets Integration")
+    sheet_name = st.text_input("Enter Google Sheet Name:", placeholder="e.g., My Recipe Sheet")
+    json_keyfile = st.text_input("Enter Path to Google Sheets JSON Keyfile:", placeholder="e.g., credentials.json")
 
-    # JavaScript to load API key from localStorage
-    st.markdown("""
-        <script>
-        // Load API key from localStorage when the page loads
-        function loadApiKey() {
-            const apiKey = localStorage.getItem("gemini_api_key");
-            if (apiKey) {
-                document.getElementById("apiKey").value = apiKey;
-            }
-        }
-        window.onload = loadApiKey;
-
-        // Save API key to localStorage when the input changes
-        function saveApiKey() {
-            const apiKey = document.getElementById("apiKey").value;
-            localStorage.setItem("gemini_api_key", apiKey);
-        }
-        </script>
-    """, unsafe_allow_html=True)
-
-    # API Key Input with placeholder
-    gemini_api_key = st.text_input(
-        "",  # Empty label since we're using custom HTML above
-        type="password",
-        value="",
-        key="apiKey",
-        on_change=None,
-        placeholder="Enter your Google API key"  # Placeholder for API key input
-    )
-
-    # Save API key to localStorage when the user inputs it
-    if gemini_api_key:
-        st.session_state.gemini_api_key = gemini_api_key
-        st.markdown(f"""
-            <script>
-            localStorage.setItem("gemini_api_key", "{gemini_api_key}");
-            </script>
-        """, unsafe_allow_html=True)
-
-    # Recipe name input with placeholder
-    recipe_name = st.text_input(
-        "Enter the recipe name:",
-        placeholder="e.g., Chocolate Cake, Spaghetti Carbonara, etc."  # Placeholder for recipe name input
-    )
-
-    # Language selection
-    language = st.selectbox("Select Language:", list(LANGUAGES.keys()))
-
-    # Custom CSS to make the button full width
-    st.markdown("""
-        <style>
-        .stButton > button {
-            width: 100%;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
-    if st.button("Generate Recipe"):
-        if recipe_name:
-            if 'gemini_api_key' not in st.session_state:
-                st.warning("Please enter your Gemini API key.")
-            else:
-                recipe_post = generate_recipe_post_gemini(recipe_name, language)
-                if recipe_post:
-                    st.subheader("Generated Recipe Post:")
-                    st.write(recipe_post)
-
-                    # Add space between recipe and MidJourney prompts
-                    st.markdown('<div class="spacer"></div>', unsafe_allow_html=True)
-
-                    # Generate MidJourney Prompt (Version 1)
-                    midjourney_prompt_v1 = generate_midjourney_prompt_v1(recipe_name)
-                    st.subheader("MidJourney Prompt (Version 1):")
-                    st.code(midjourney_prompt_v1, language="text")
-
-                    # Copy to Clipboard Button for Version 1
-                    st.markdown(f"""
-                        <button onclick="navigator.clipboard.writeText(`{midjourney_prompt_v1}`)" style="margin-top: 10px;">
-                            Copy MidJourney Prompt (Version 1) to Clipboard
-                        </button>
-                    """, unsafe_allow_html=True)
-
-                    # Generate MidJourney Prompt (Version 2)
-                    midjourney_prompt_v2 = generate_midjourney_prompt_v2(recipe_name)
-                    st.subheader("MidJourney Prompt (Version 2):")
-                    st.code(midjourney_prompt_v2, language="text")
-
-                    # Copy to Clipboard Button for Version 2
-                    st.markdown(f"""
-                        <button onclick="navigator.clipboard.writeText(`{midjourney_prompt_v2}`)" style="margin-top: 10px;">
-                            Copy MidJourney Prompt (Version 2) to Clipboard
-                        </button>
-                    """, unsafe_allow_html=True)
+    if st.button("Connect to Google Sheet"):
+        if sheet_name and json_keyfile:
+            try:
+                sheet = connect_to_google_sheet(sheet_name, json_keyfile)
+                st.session_state.sheet = sheet
+                st.success("Connected to Google Sheet successfully!")
+            except Exception as e:
+                st.error(f"Error connecting to Google Sheet: {e}")
         else:
-            st.warning("Please enter a recipe name.")
+            st.warning("Please enter both the sheet name and JSON keyfile path.")
+
+    if 'sheet' in st.session_state:
+        sheet = st.session_state.sheet
+        recipe_names = sheet.col_values(1)  # Read recipe names from the first column
+
+        if st.button("Generate Recipes and Update Sheet"):
+            for i, recipe_name in enumerate(recipe_names[1:], start=2):  # Skip header row
+                recipe_post = generate_recipe_post_gemini(recipe_name, "🇬🇧 English")  # Default to English
+                if recipe_post:
+                    sheet.update_cell(i, 2, recipe_post)  # Write output to the second column
+                    st.success(f"Generated recipe for '{recipe_name}' and updated the sheet.")
+                else:
+                    st.error(f"Failed to generate recipe for '{recipe_name}'.")
 
 if __name__ == "__main__":
     main()
