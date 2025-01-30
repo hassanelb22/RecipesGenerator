@@ -1,5 +1,7 @@
 import streamlit as st
 import requests
+import os
+password = os.getenv("PASSWORD")
 
 # API configurations
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
