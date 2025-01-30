@@ -99,6 +99,11 @@ def generate_recipe_post_gemini(recipe_name_or_text, language):
         st.error(f"Error generating recipe post with Gemini: {e}")
         return None
 
+# Function to generate MidJourney prompt
+def generate_midjourney_prompt(recipe):
+    prompt = f"{recipe} STYLE: amateur Close-up Shot | EMOTION: Tempting | SCENE: kitchen | TAGS: amateur food photography, clean composition, dramatic lighting, mouth-watering | CAMERA: iphone 15 pro max | SHOT TYPE: Close-up | COMPOSITION: top side view Centered | LIGHTING: Soft directional light | TIME: Daytime | LOCATION TYPE: Kitchen near windows --ar 1:1"
+    return prompt
+
 # Streamlit app
 def main():
     # Custom CSS to center the logo
@@ -200,6 +205,18 @@ def main():
                 if recipe_post:
                     st.subheader("Generated Recipe Post:")
                     st.write(recipe_post)
+
+                    # Generate MidJourney Prompt
+                    midjourney_prompt = generate_midjourney_prompt(recipe_name)
+                    st.subheader("MidJourney Prompt:")
+                    st.code(midjourney_prompt, language="text")
+
+                    # Copy to Clipboard Button
+                    st.markdown(f"""
+                        <button onclick="navigator.clipboard.writeText(`{midjourney_prompt}`)" style="margin-top: 10px;">
+                            Copy MidJourney Prompt to Clipboard
+                        </button>
+                    """, unsafe_allow_html=True)
         else:
             st.warning("Please enter a recipe name.")
 
