@@ -222,20 +222,10 @@ def main():
                     st.subheader("MidJourney Prompt (Version 1):")
                     st.code(midjourney_prompt_v1, language="text")
 
-                    # Copy to Clipboard Button for Version 1
-                    st.markdown(f"""
-
-                    """, unsafe_allow_html=True)
-
                     # Generate MidJourney Prompt (Version 2)
                     midjourney_prompt_v2 = generate_midjourney_prompt_v2(recipe_name)
                     st.subheader("MidJourney Prompt (Version 2):")
                     st.code(midjourney_prompt_v2, language="text")
-
-                    # Copy to Clipboard Button for Version 2
-                    st.markdown(f"""
-
-                    """, unsafe_allow_html=True)
         else:
             st.warning("Please enter a recipe name.")
 
