@@ -1,9 +1,5 @@
 import streamlit as st
 import requests
-import os
-
-# File to store the API key
-API_KEY_FILE = "gemini_api_key.txt"
 
 # API configurations
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
@@ -103,57 +99,41 @@ def generate_recipe_post_gemini(recipe_name_or_text, language):
         st.error(f"Error generating recipe post with Gemini: {e}")
         return None
 
-# Function to save API key to a file
-def save_api_key(api_key):
-    with open(API_KEY_FILE, "w") as file:
-        file.write(api_key)
-
-# Function to load API key from a file
-def load_api_key():
-    if os.path.exists(API_KEY_FILE):
-        with open(API_KEY_FILE, "r") as file:
-            return file.read().strip()
-    return None
-
 # Streamlit app
 def main():
-    # Custom HTML and CSS for the logo and stylish font
+    st.title("🍳 Recipe Post Generator 🍳")
+
+    # Custom HTML for API Key Input Label
     st.markdown("""
         <style>
-            .logo {
-                font-family: 'Pacifico', cursive;
-                font-size: 48px;
-                text-align: center;
-                margin-bottom: 20px;
+            .api-key-label {
+                font-size: 14px;
+                font-weight: 500;
+                color: #374151;
+                margin-bottom: 8px;
             }
-           
-        
-            @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+            .api-key-link {
+                font-size: 12px;
+                color: #f97316;
+                margin-left: 8px;
+            }
+            .api-key-link:hover {
+                color: #ea580c;
+            }
         </style>
-        <div class="logo">
-            <span>🍳</span> Recipe Post Generator <span>🍳</span>
-        </div>
-    """, unsafe_allow_html=True)
-
-    # Load API key from file
-    if 'gemini_api_key' not in st.session_state:
-        st.session_state.gemini_api_key = load_api_key() or ""
-
-    # API Key Input
-    st.markdown("""
         <label class="api-key-label">
-            Enter your Gemini API Key
+            Google GEMINI API Key
             <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="api-key-link">
                 Get your API key here →
             </a>
         </label>
     """, unsafe_allow_html=True)
-    gemini_api_key = st.text_input("", type="password", value=st.session_state.gemini_api_key, key="apiKey")
 
-    # Save API key to file when it changes
-    if gemini_api_key != st.session_state.gemini_api_key:
+    # API Key Input
+    gemini_api_key = st.text_input("", type="password", value=st.session_state.get("gemini_api_key", ""), key="apiKey")
+
+    if gemini_api_key:
         st.session_state.gemini_api_key = gemini_api_key
-        save_api_key(gemini_api_key)
 
     # Recipe name input
     recipe_name = st.text_input("Enter the recipe name:")
@@ -163,7 +143,7 @@ def main():
 
     if st.button("Generate Recipe"):
         if recipe_name:
-            if not st.session_state.gemini_api_key:
+            if 'gemini_api_key' not in st.session_state:
                 st.warning("Please enter your Gemini API key.")
             else:
                 recipe_post = generate_recipe_post_gemini(recipe_name, language)
