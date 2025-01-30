@@ -101,7 +101,28 @@ def generate_recipe_post_gemini(recipe_name_or_text, language):
 
 # Streamlit app
 def main():
-    st.title("🍳 Recipe Post Generator 🍳")
+    # Custom CSS to center the logo
+    st.markdown("""
+        <style>
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .logo-container img {
+            max-width: 300px; /* Adjust the size of the logo */
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    # Logo container with your logo
+    st.markdown(
+        '<div class="logo-container">'
+        '<img src="https://i.ibb.co/ZpdDQDr2/recipe-generator.png" alt="Recipe Generator Logo">'
+        '</div>',
+        unsafe_allow_html=True
+    )
 
     # Custom HTML for API Key Input Label
     st.markdown("""
