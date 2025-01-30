@@ -111,7 +111,7 @@ def generate_midjourney_prompt_v2(recipe):
 
 # Streamlit app
 def main():
-    # Custom CSS to center the logo
+    # Custom CSS to center the logo and style the Facebook-like post
     st.markdown("""
         <style>
         .logo-container {
@@ -137,6 +137,7 @@ def main():
             display: flex;
             align-items: center;
             margin-top: 8px;
+            color: #606770;
         }
         .facebook-post .reactions .like,
         .facebook-post .reactions .comment,
@@ -144,11 +145,27 @@ def main():
             display: flex;
             align-items: center;
             margin-right: 16px;
-            color: #606770;
         }
         .facebook-post .reactions .like i,
         .facebook-post .reactions .comment i,
         .facebook-post .reactions .share i {
+            margin-right: 4px;
+        }
+        .facebook-post .actions {
+            display: flex;
+            align-items: center;
+            margin-top: 8px;
+        }
+        .facebook-post .actions button {
+            background: none;
+            border: none;
+            color: #606770;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            margin-right: 16px;
+        }
+        .facebook-post .actions button i {
             margin-right: 4px;
         }
         </style>
@@ -242,14 +259,22 @@ def main():
                             <p>{recipe_post}</p>
                             <div class="reactions">
                                 <div class="like">
-                                    <i>👍</i> 123
+                                    <i>👍</i> 1.2K Likes
                                 </div>
                                 <div class="comment">
-                                    <i>💬</i> 45
+                                    <i>💬</i> 234 Comments
                                 </div>
                                 <div class="share">
-                                    <i>🔗</i> 67
+                                    <i>🔗</i> 89 Shares
                                 </div>
+                            </div>
+                            <div class="actions">
+                                <button>
+                                    <i>📋</i> Copy Recipe
+                                </button>
+                                <button>
+                                    <i>🌟</i> Share
+                                </button>
                             </div>
                         </div>
                     """, unsafe_allow_html=True)
