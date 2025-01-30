@@ -9,7 +9,7 @@ LANGUAGES = {
     "🇬🇧 English": "Generate a detailed recipe post in English in the following structured format:",
     "🇪🇸 Spanish": "Genera una publicación detallada de una receta en español en el siguiente formato estructurado:",
     "🇩🇪 German": "Erstellen Sie einen detaillierten Rezeptbeitrag auf Deutsch im folgenden strukturierten Format:",
-    "🇫🇷 French": "Générez une publication détaillée de recette en français dans le format structuré suivant:"
+    "🇫🇷 French": "Générez una publicación detallada de recette en français dans le format structuré suivant:"
 }
 
 # Emoji mapping based on recipe keywords
@@ -105,7 +105,6 @@ def main():
 
     # Custom HTML for API Key Input Label
     st.markdown("""
-        
         <label class="api-key-label">
             Google GEMINI API Key
             <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="api-key-link">
@@ -114,11 +113,44 @@ def main():
         </label>
     """, unsafe_allow_html=True)
 
-    # API Key Input
-    gemini_api_key = st.text_input("", type="password", value=st.session_state.get("gemini_api_key", ""), key="apiKey")
+    # JavaScript to load API key from localStorage
+    st.markdown("""
+        <script>
+        // Load API key from localStorage when the page loads
+        function loadApiKey() {
+            const apiKey = localStorage.getItem("gemini_api_key");
+            if (apiKey) {
+                document.getElementById("apiKey").value = apiKey;
+            }
+        }
+        window.onload = loadApiKey;
 
+        // Save API key to localStorage when the input changes
+        function saveApiKey() {
+            const apiKey = document.getElementById("apiKey").value;
+            localStorage.setItem("gemini_api_key", apiKey);
+        }
+        </script>
+    """, unsafe_allow_html=True)
+
+    # API Key Input with placeholder
+    gemini_api_key = st.text_input(
+        "",  # Empty label since we're using custom HTML above
+        type="password",
+        value="",
+        key="apiKey",
+        on_change=None,
+        placeholder="Enter your Google API key"  # Add placeholder here
+    )
+
+    # Save API key to localStorage when the user inputs it
     if gemini_api_key:
         st.session_state.gemini_api_key = gemini_api_key
+        st.markdown(f"""
+            <script>
+            localStorage.setItem("gemini_api_key", "{gemini_api_key}");
+            </script>
+        """, unsafe_allow_html=True)
 
     # Recipe name input
     recipe_name = st.text_input("Enter the recipe name:")
