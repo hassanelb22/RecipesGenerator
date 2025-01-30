@@ -1,5 +1,3 @@
-![Uploading recipe-generator.png…]()
-
 
 ---
 
