@@ -4,9 +4,9 @@ import requests
 # API configurations
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
 
-# Language options
+# Language options with Unicode country flags
 LANGUAGES = {
-    "🇬🇧 English": "Generate a detailed recipe post in English in the following structured format:",
+    "🇺🇸 English": "Generate a detailed recipe post in English in the following structured format:",
     "🇪🇸 Spanish": "Genera una publicación detallada de una receta en español en el siguiente formato estructurado:",
     "🇩🇪 German": "Erstellen Sie einen detaillierten Rezeptbeitrag auf Deutsch im folgenden strukturierten Format:",
     "🇫🇷 French": "Générez una publicación detallada de recette en français dans le format structuré suivant:"
@@ -158,7 +158,7 @@ def main():
         placeholder="e.g., Chocolate Cake, Spaghetti Carbonara, etc."  # Placeholder for recipe name input
     )
 
-    # Language selection
+    # Language selection with Unicode country flags
     language = st.selectbox("Select Language:", list(LANGUAGES.keys()))
 
     if st.button("Generate Recipe"):
