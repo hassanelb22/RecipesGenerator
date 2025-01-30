@@ -123,6 +123,9 @@ def main():
         .logo-container img {
             max-width: 300px; /* Adjust the size of the logo */
         }
+        .spacer {
+            margin-top: 30px; /* Space between recipe and MidJourney prompts */
+        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -210,6 +213,9 @@ def main():
                 if recipe_post:
                     st.subheader("Generated Recipe Post:")
                     st.write(recipe_post)
+
+                    # Add space between recipe and MidJourney prompts
+                    st.markdown('<div class="spacer"></div>', unsafe_allow_html=True)
 
                     # Generate MidJourney Prompt (Version 1)
                     midjourney_prompt_v1 = generate_midjourney_prompt_v1(recipe_name)
