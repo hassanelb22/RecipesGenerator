@@ -129,6 +129,20 @@ def main():
         </style>
     """, unsafe_allow_html=True)
 
+    # Password check
+    if 'authenticated' not in st.session_state:
+        st.session_state.authenticated = False
+
+    if not st.session_state.authenticated:
+        password_input = st.text_input("Enter Password:", type="password")
+        if password_input:
+            if password_input == st.secrets["password"]:
+                st.session_state.authenticated = True
+                st.experimental_rerun()
+            else:
+                st.error("Incorrect password. Please try again.")
+        return
+
     # Logo container with your logo
     st.markdown(
         '<div class="logo-container">'
@@ -147,23 +161,44 @@ def main():
         </label>
     """, unsafe_allow_html=True)
 
-    # Initialize session state for API key if it doesn't exist
-    if "gemini_api_key" not in st.session_state:
-        st.session_state.gemini_api_key = ""
+    # JavaScript to load API key from localStorage
+    st.markdown("""
+        <script>
+        // Load API key from localStorage when the page loads
+        function loadApiKey() {
+            const apiKey = localStorage.getItem("gemini_api_key");
+            if (apiKey) {
+                document.getElementById("apiKey").value = apiKey;
+            }
+        }
+        window.onload = loadApiKey;
+
+        // Save API key to localStorage when the input changes
+        function saveApiKey() {
+            const apiKey = document.getElementById("apiKey").value;
+            localStorage.setItem("gemini_api_key", apiKey);
+        }
+        </script>
+    """, unsafe_allow_html=True)
 
     # API Key Input with placeholder
     gemini_api_key = st.text_input(
         "",  # Empty label since we're using custom HTML above
         type="password",
-        value=st.session_state.gemini_api_key,
+        value="",
         key="apiKey",
         on_change=None,
         placeholder="Enter your Google API key"  # Placeholder for API key input
     )
 
-    # Save API key to session state when the user inputs it
+    # Save API key to localStorage when the user inputs it
     if gemini_api_key:
         st.session_state.gemini_api_key = gemini_api_key
+        st.markdown(f"""
+            <script>
+            localStorage.setItem("gemini_api_key", "{gemini_api_key}");
+            </script>
+        """, unsafe_allow_html=True)
 
     # Recipe name input with placeholder
     recipe_name = st.text_input(
@@ -185,7 +220,7 @@ def main():
 
     if st.button("Generate Recipe"):
         if recipe_name:
-            if not st.session_state.gemini_api_key:
+            if 'gemini_api_key' not in st.session_state:
                 st.warning("Please enter your Gemini API key.")
             else:
                 recipe_post = generate_recipe_post_gemini(recipe_name, language)
