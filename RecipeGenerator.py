@@ -134,22 +134,20 @@ def main():
         st.session_state.authenticated = False
 
     if not st.session_state.authenticated:
-        password_input = st.text_input("Enter Password:", type="password")
-        if password_input:
-            if "password" not in st.secrets:
-                st.error("Password key is missing in secrets. Please check your secrets configuration.")
+        if "password" not in st.secrets:
+            st.error("Password key is missing in secrets. Please check your secrets configuration.")
+        else:
+            if st.secrets["password"]:
+                st.session_state.authenticated = True
+                st.rerun()  # Use st.rerun() instead of st.experimental_rerun()
             else:
-                if password_input == st.secrets["password"]:
-                    st.session_state.authenticated = True
-                    st.rerun()  # Use st.rerun() instead of st.experimental_rerun()
-                else:
-                    st.error("Incorrect password. Please try again.")
+                st.error("Incorrect password. Please try again.")
         return
 
     # Logo container with your logo
     st.markdown(
         '<div class="logo-container">'
-        '<img src="https://raw.githubusercontent.com/hassanelb22/RecipesGenerator/refs/heads/main/assets/recipe-generator.png" alt="Recipe Generator Logo">'
+        '<img src="https://i.ibb.co/ZpdDQDr2/recipe-generator.png" alt="Recipe Generator Logo">'
         '</div>',
         unsafe_allow_html=True
     )
