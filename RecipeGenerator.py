@@ -103,9 +103,14 @@ def generate_recipe_post_gemini(recipe_name_or_text, language):
 def main():
     st.title("🍳 Recipe Post Generator 🍳")
 
+    # Initialize session state for API keys if not already present
+    if 'gemini_api_key' not in st.session_state:
+        st.session_state.gemini_api_key = ""
+    if 'deepseek_api_key' not in st.session_state:
+        st.session_state.deepseek_api_key = ""
+
     # Custom HTML for API Key Input Label
     st.markdown("""
-        
         <label class="api-key-label">
             Google GEMINI API Key
             <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="api-key-link">
@@ -114,11 +119,19 @@ def main():
         </label>
     """, unsafe_allow_html=True)
 
-    # API Key Input
-    gemini_api_key = st.text_input("", type="password", value=st.session_state.get("gemini_api_key", ""), key="apiKey")
-
+    # API Key Input for Gemini
+    gemini_api_key = st.text_input("", type="password", value=st.session_state.gemini_api_key, key="gemini_api_key_input", placeholder="Enter your Gemini API Key:")
+    
+    # Save Gemini API Key to session state
     if gemini_api_key:
         st.session_state.gemini_api_key = gemini_api_key
+
+    # API Key Input for DeepSeek
+    deepseek_api_key = st.text_input("", type="password", value=st.session_state.deepseek_api_key, key="deepseek_api_key_input", placeholder="Enter your DeepSeek API Key:")
+    
+    # Save DeepSeek API Key to session state
+    if deepseek_api_key:
+        st.session_state.deepseek_api_key = deepseek_api_key
 
     # Recipe name input
     recipe_name = st.text_input("Enter the recipe name:")
@@ -128,7 +141,7 @@ def main():
 
     if st.button("Generate Recipe"):
         if recipe_name:
-            if 'gemini_api_key' not in st.session_state:
+            if 'gemini_api_key' not in st.session_state or not st.session_state.gemini_api_key:
                 st.warning("Please enter your Gemini API key.")
             else:
                 recipe_post = generate_recipe_post_gemini(recipe_name, language)
