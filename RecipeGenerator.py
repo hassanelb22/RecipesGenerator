@@ -9,7 +9,7 @@ LANGUAGES = {
     "🇬🇧 English": "Generate a detailed recipe post in English in the following structured format:",
     "🇪🇸 Spanish": "Genera una publicación detallada de una receta en español en el siguiente formato estructurado:",
     "🇩🇪 German": "Erstellen Sie einen detaillierten Rezeptbeitrag auf Deutsch im folgenden strukturierten Format:",
-    "🇫🇷 French": "Générez une publication détaillée de recette en français dans le format structuré suivant:"
+    "🇫🇷 French": "Générez una publicación detallada de recette en français dans le format structuré suivant:"
 }
 
 # Emoji mapping based on recipe keywords
@@ -137,10 +137,16 @@ def main():
     """, unsafe_allow_html=True)
 
     # API Key Input
-    gemini_api_key = st.text_input("", type="password", value="", key="apiKey", onchange="saveApiKey()")
+    gemini_api_key = st.text_input("", type="password", value="", key="apiKey", on_change=None)
 
+    # Save API key to localStorage when the user submits the form
     if gemini_api_key:
         st.session_state.gemini_api_key = gemini_api_key
+        st.markdown(f"""
+            <script>
+            localStorage.setItem("gemini_api_key", "{gemini_api_key}");
+            </script>
+        """, unsafe_allow_html=True)
 
     # Recipe name input
     recipe_name = st.text_input("Enter the recipe name:")
