@@ -1,6 +1,5 @@
 import streamlit as st
 import requests
-import os
 
 # API configurations
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
@@ -146,7 +145,7 @@ def main():
             else:
                 if password_input == st.secrets["password"]:
                     st.session_state.authenticated = True
-                    st.experimental_rerun()
+                    st.rerun()  # Use st.rerun() instead of st.experimental_rerun()
                 else:
                     st.error("Incorrect password. Please try again.")
         return
