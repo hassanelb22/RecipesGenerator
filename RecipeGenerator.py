@@ -140,7 +140,7 @@ def main():
         value="",
         key="apiKey",
         on_change=None,
-        placeholder="Enter your Google API key"  # Add placeholder here
+        placeholder="Enter your Google API key"  # Placeholder for API key input
     )
 
     # Save API key to localStorage when the user inputs it
@@ -152,8 +152,11 @@ def main():
             </script>
         """, unsafe_allow_html=True)
 
-    # Recipe name input
-    recipe_name = st.text_input("Enter the recipe name:")
+    # Recipe name input with placeholder
+    recipe_name = st.text_input(
+        "Enter the recipe name:",
+        placeholder="e.g., Chocolate Cake, Spaghetti Carbonara, etc."  # Placeholder for recipe name input
+    )
 
     # Language selection
     language = st.selectbox("Select Language:", list(LANGUAGES.keys()))
