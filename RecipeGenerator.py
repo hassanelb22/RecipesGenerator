@@ -129,7 +129,6 @@ def main():
         </style>
     """, unsafe_allow_html=True)
 
-
     # Password check
     if 'authenticated' not in st.session_state:
         st.session_state.authenticated = False
@@ -137,7 +136,6 @@ def main():
     if not st.session_state.authenticated:
         password_input = st.text_input("Enter Password:", type="password")
         if password_input:
-            # Debugging: Check if the password key exists in st.secrets
             if "password" not in st.secrets:
                 st.error("Password key is missing in secrets. Please check your secrets configuration.")
             else:
