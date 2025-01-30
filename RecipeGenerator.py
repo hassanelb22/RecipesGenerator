@@ -124,26 +124,10 @@ def main():
                 font-family: 'Pacifico', cursive;
                 font-size: 48px;
                 text-align: center;
-                color: #FF6347;
                 margin-bottom: 20px;
             }
-            .logo span {
-                color: #FFA500;
-            }
-            .api-key-label {
-                font-size: 14px;
-                font-weight: 500;
-                color: #374151;
-                margin-bottom: 8px;
-            }
-            .api-key-link {
-                font-size: 12px;
-                color: #f97316;
-                margin-left: 8px;
-            }
-            .api-key-link:hover {
-                color: #ea580c;
-            }
+           
+        
             @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
         </style>
         <div class="logo">
