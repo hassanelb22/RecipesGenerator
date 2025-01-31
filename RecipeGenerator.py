@@ -307,22 +307,19 @@ def main():
         </style>
     """, unsafe_allow_html=True)
 
-    # Token-based access control
+    # Password check
     if 'authenticated' not in st.session_state:
         st.session_state.authenticated = False
 
     if not st.session_state.authenticated:
-        st.title("Access Control")
-        user_token = st.text_input("Enter your access token:", type="password")
-
-        if st.button("Validate Token"):
-            # Access tokens from Streamlit Secrets
-            valid_tokens = st.secrets["tokens"].values()
-            if user_token in valid_tokens:
+        if "password" not in st.secrets:
+            st.error("Password key is missing in secrets. Please check your secrets configuration.")
+        else:
+            if st.secrets["password"]:
                 st.session_state.authenticated = True
-                st.rerun()
+                st.rerun()  # Use st.rerun() instead of st.experimental_rerun()
             else:
-                st.error("Invalid token. Please try again.")
+                st.error("Incorrect password. Please try again.")
         return
 
     # Logo container with your logo
