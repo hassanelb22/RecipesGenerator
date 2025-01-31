@@ -307,19 +307,18 @@ def main():
         </style>
     """, unsafe_allow_html=True)
 
-    # Password check
+    # Token access check
     if 'authenticated' not in st.session_state:
         st.session_state.authenticated = False
 
     if not st.session_state.authenticated:
-        if "password" not in st.secrets:
-            st.error("Password key is missing in secrets. Please check your secrets configuration.")
-        else:
-            if st.secrets["password"]:
+        token = st.text_input("Enter your access token:", type="password")
+        if token:
+            if token in [st.secrets["user1_token"], st.secrets["user2_token"], st.secrets["user3_token"]]:
                 st.session_state.authenticated = True
-                st.rerun()  # Use st.rerun() instead of st.experimental_rerun()
+                st.rerun()
             else:
-                st.error("Incorrect password. Please try again.")
+                st.error("Invalid token. Please try again.")
         return
 
     # Logo container with your logo
