@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+import pandas as pd
 
 # API configurations
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
@@ -99,6 +100,46 @@ def generate_recipe_post_gemini(recipe_name_or_text, language):
     except Exception as e:
         st.error(f"Error generating recipe post with Gemini: {e}")
         return None
+
+# Function to generate MidJourney prompt (Version 1)
+def generate_midjourney_prompt_v1(recipe):
+    prompt = f"{recipe} STYLE: amateur Close-up Shot | EMOTION: Tempting | SCENE: kitchen | TAGS: amateur food photography, clean composition, dramatic lighting, mouth-watering | CAMERA: iphone 15 pro max | SHOT TYPE: Close-up | COMPOSITION: top side view Centered | LIGHTING: Soft directional light | TIME: Daytime | LOCATION TYPE: Kitchen near windows --ar 1:1"
+    return prompt
+
+# Function to generate MidJourney prompt (Version 2)
+def generate_midjourney_prompt_v2(recipe):
+    prompt = f"Capture the essence of This Light and refreshing, {recipe}. Make our readers crave a bite just by looking at your photo. We want to see it in all its mouthwatering glory, ready to inspire cooks and bakers alike. Get creative with your composition, lighting, and styling. Make it look Realistic, camera: iphone, V6"
+    return prompt
+
+# Function to process a CSV file and generate recipes
+def process_csv(file_path, language, api_key):
+    # Read the CSV file
+    df = pd.read_csv(file_path)
+    
+    # Check if the required column exists
+    if "recipe_name" not in df.columns:
+        st.error("The CSV file must contain a 'recipe_name' column.")
+        return None
+    
+    # Initialize an empty list to store results
+    results = []
+    
+    # Process each recipe name
+    for recipe_name in df["recipe_name"]:
+        recipe_post = generate_recipe_post_gemini(recipe_name, language)
+        if recipe_post:
+            midjourney_prompt_v1 = generate_midjourney_prompt_v1(recipe_name)
+            midjourney_prompt_v2 = generate_midjourney_prompt_v2(recipe_name)
+            results.append({
+                "recipe_name": recipe_name,
+                "generated_recipe": recipe_post,
+                "midjourney_prompt_v1": midjourney_prompt_v1,
+                "midjourney_prompt_v2": midjourney_prompt_v2
+            })
+    
+    # Convert results to a DataFrame
+    output_df = pd.DataFrame(results)
+    return output_df
 
 # Function to generate content using Gemini API
 def generate_content(prompt):
@@ -333,7 +374,7 @@ def main():
 
     # Navigation bar in the sidebar
     st.sidebar.title("Navigation")
-    app_mode = st.sidebar.radio("Choose a mode", ["Generate Recipe", "SEO-Optimized Article Generator"])
+    app_mode = st.sidebar.radio("Choose a mode", ["Generate Recipe", "SEO-Optimized Article Generator", "Recipe Generator from CSV"])
 
     if app_mode == "Generate Recipe":
         # Recipe name input with placeholder
@@ -445,6 +486,33 @@ def main():
                         st.write(recipe_schema)
             else:
                 st.warning("Please enter a focus keyword.")
+
+    elif app_mode == "Recipe Generator from CSV":
+        st.title("Recipe Generator from CSV")
+
+        # Upload CSV file
+        uploaded_file = st.file_uploader("Upload a CSV file with recipe names", type=["csv"])
+        
+        # Language selection
+        language = st.selectbox("Select Language:", list(LANGUAGES.keys()))
+
+        if uploaded_file is not None and 'gemini_api_key' in st.session_state:
+            # Process the CSV file
+            output_df = process_csv(uploaded_file, language, st.session_state.gemini_api_key)
+            
+            if output_df is not None:
+                # Display the results
+                st.write("Generated Recipes:")
+                st.dataframe(output_df)
+                
+                # Download the results as a CSV file
+                csv = output_df.to_csv(index=False).encode('utf-8')
+                st.download_button(
+                    label="Download Output CSV",
+                    data=csv,
+                    file_name="generated_recipes.csv",
+                    mime="text/csv"
+                )
 
 if __name__ == "__main__":
     main()
