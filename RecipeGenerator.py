@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+from datetime import datetime
 
 # API configurations
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
@@ -133,6 +134,41 @@ def main():
             font-weight: 400;
             font-family: 'Almarai', serif;
         }
+        .facebook-post {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .facebook-post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .facebook-post-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .facebook-post-header .post-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .facebook-post-header .post-info .page-name {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .facebook-post-header .post-info .post-time {
+            font-size: 12px;
+            color: #606770;
+        }
+        .facebook-post-content {
+            font-size: 14px;
+            line-height: 1.5;
+        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -233,12 +269,21 @@ def main():
             else:
                 recipe_post = generate_recipe_post_gemini(recipe_name, language)
                 if recipe_post:
-                    st.subheader("Generated Recipe Post:")
-                    # Apply RTL styling if Arabic is selected
-                    if language == "🇸🇦 Arabic":
-                        st.markdown(f'<div class="rtl-text">{recipe_post}</div>', unsafe_allow_html=True)
-                    else:
-                        st.write(recipe_post)
+                    # Facebook-like post styling
+                    st.markdown(f"""
+                        <div class="facebook-post">
+                            <div class="facebook-post-header">
+                                <img src="https://i.ibb.co/ZpdDQDr2/recipe-generator.png" alt="Profile Image">
+                                <div class="post-info">
+                                    <div class="page-name">Recipes Generator</div>
+                                    <div class="post-time">Just now</div>
+                                </div>
+                            </div>
+                            <div class="facebook-post-content">
+                                {recipe_post}
+                            </div>
+                        </div>
+                    """, unsafe_allow_html=True)
 
                     # Add space between recipe and MidJourney prompts
                     st.markdown('<div class="spacer"></div>', unsafe_allow_html=True)
