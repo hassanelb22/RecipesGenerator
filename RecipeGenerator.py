@@ -135,8 +135,7 @@ def main():
             font-family: 'Almarai', serif;
         }
         .facebook-post {
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
         }
         .facebook-post-header {
             display: flex;
@@ -163,21 +162,8 @@ def main():
         .facebook-post-header .post-info .post-time {
             font-size: 12px;
         }
-        .facebook-post-header .follow-button {
-            background-color: #1877f2;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 6px 12px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        .facebook-post-content {
-            font-size: 14px;
-            line-height: 1.5;
-        }
+        
+        
         </style>
     """, unsafe_allow_html=True)
 
@@ -297,7 +283,6 @@ def main():
                                         <div class="post-time">Just now</div>
                                     </div>
                                 </div>
-                                <a href="https://your-website.com" class="follow-button" target="_blank">Follow</a>
                             </div>
                             <div class="facebook-post-content">
                                 {recipe_post}
