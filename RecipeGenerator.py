@@ -43,20 +43,6 @@ EMOJI_MAPPING = {
     "cocktail": "🍹",
 }
 
-# Public tokens from secrets.toml
-PUBLIC_TOKENS = {
-    "user1": st.secrets["user1_token"],
-    "user2": st.secrets["user2_token"],
-    "user3": st.secrets["user3_token"],
-}
-
-# Private tokens from Streamlit Advanced Secrets
-PRIVATE_TOKENS = {
-    "user1": st.secrets["user1_private_token"],
-    "user2": st.secrets["user2_private_token"],
-    "user3": st.secrets["user3_private_token"],
-}
-
 # Function to get a dynamic emoji based on the recipe name
 def get_dynamic_emoji(recipe_name):
     recipe_name_lower = recipe_name.lower()
@@ -269,23 +255,6 @@ def generate_recipe_schema(recipe_name):
 
 # Streamlit app
 def main():
-    # Token access check
-    if 'authenticated' not in st.session_state:
-        st.session_state.authenticated = False
-
-    if not st.session_state.authenticated:
-        token = st.text_input("Enter your access token:", type="password")
-        if token:
-            if token in PUBLIC_TOKENS.values():
-                # Map the public token to the private token
-                user_key = list(PUBLIC_TOKENS.keys())[list(PUBLIC_TOKENS.values()).index(token)]
-                st.session_state.private_token = PRIVATE_TOKENS[user_key]
-                st.session_state.authenticated = True
-                st.rerun()
-            else:
-                st.error("Invalid token. Please try again.")
-        return
-
     # Custom CSS to center the logo and handle RTL for Arabic
     st.markdown("""
         <style>
@@ -337,6 +306,21 @@ def main():
         }
         </style>
     """, unsafe_allow_html=True)
+
+    # Password check
+    if 'authenticated' not in st.session_state:
+        st.session_state.authenticated = False
+
+    if not st.session_state.authenticated:
+        if "password" not in st.secrets:
+            st.error("Password key is missing in secrets. Please check your secrets configuration.")
+        else:
+            if st.secrets["password"]:
+                st.session_state.authenticated = True
+                st.rerun()  # Use st.rerun() instead of st.experimental_rerun()
+            else:
+                st.error("Incorrect password. Please try again.")
+        return
 
     # Logo container with your logo
     st.markdown(
