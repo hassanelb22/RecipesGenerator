@@ -43,13 +43,6 @@ EMOJI_MAPPING = {
     "cocktail": "🍹",
 }
 
-# Valid user tokens (replace with your team's tokens)
-VALID_TOKENS = {
-    "user1_token": "token1",
-    "user2_token": "token2",
-    "user3_token": "token3",
-}
-
 # Function to get a dynamic emoji based on the recipe name
 def get_dynamic_emoji(recipe_name):
     recipe_name_lower = recipe_name.lower()
@@ -323,7 +316,9 @@ def main():
         user_token = st.text_input("Enter your access token:", type="password")
 
         if st.button("Validate Token"):
-            if user_token in VALID_TOKENS.values():
+            # Access tokens from Streamlit Secrets
+            valid_tokens = st.secrets["tokens"].values()
+            if user_token in valid_tokens:
                 st.session_state.authenticated = True
                 st.rerun()
             else:
