@@ -269,8 +269,8 @@ def generate_segmind_image(prompt):
         }
         
         # Debug: Print the payload being sent
-        st.write("Sending payload to Segmind API:")
-        st.write(payload)
+        # st.write("Sending payload to Segmind API:")
+        # st.write(payload)
         
         response = requests.post(SEGMIND_API_URL, headers=headers, json=payload)
         
