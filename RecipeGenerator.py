@@ -162,7 +162,7 @@ def main():
         </label>
     """, unsafe_allow_html=True)
 
-    # JavaScript to load API key from localStorage when the page loads
+    # JavaScript to load API key from localStorage
     st.markdown("""
         <script>
         // Load API key from localStorage when the page loads
