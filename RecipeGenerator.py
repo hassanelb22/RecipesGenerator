@@ -93,6 +93,10 @@ def generate_recipe_post_gemini(recipe_name_or_text, language):
         
         if response.status_code == 200:
             generated_text = response.json().get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "").strip()
+            
+            # Remove *** from the generated text
+            generated_text = generated_text.replace("***", "")
+            
             return generated_text
         else:
             st.error(f"Gemini API Error: {response.status_code} - {response.text}")
