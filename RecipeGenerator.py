@@ -129,19 +129,57 @@ def main():
         </style>
     """, unsafe_allow_html=True)
 
+    # JavaScript to load API key and password from localStorage
+    st.markdown("""
+        <script>
+        // Load API key and password from localStorage when the page loads
+        function loadFromLocalStorage() {
+            const apiKey = localStorage.getItem("gemini_api_key");
+            const password = localStorage.getItem("password");
+            if (apiKey) {
+                document.getElementById("apiKey").value = apiKey;
+            }
+            if (password) {
+                document.getElementById("password").value = password;
+            }
+        }
+        window.onload = loadFromLocalStorage;
+
+        // Save API key and password to localStorage when the input changes
+        function saveToLocalStorage(key, value) {
+            localStorage.setItem(key, value);
+        }
+        </script>
+    """, unsafe_allow_html=True)
+
     # Password check
     if 'authenticated' not in st.session_state:
         st.session_state.authenticated = False
 
     if not st.session_state.authenticated:
-        if "password" not in st.secrets:
-            st.error("Password key is missing in secrets. Please check your secrets configuration.")
-        else:
-            if st.secrets["password"]:
-                st.session_state.authenticated = True
-                st.rerun()  # Use st.rerun() instead of st.experimental_rerun()
+        password = st.text_input(
+            "Enter Password:",
+            type="password",
+            key="password",
+            placeholder="Enter your password",
+            on_change=lambda: st.session_state.update({"password": st.session_state.password})
+        )
+
+        if password:
+            if "password" not in st.secrets:
+                st.error("Password key is missing in secrets. Please check your secrets configuration.")
             else:
-                st.error("Incorrect password. Please try again.")
+                if password == st.secrets["password"]:
+                    st.session_state.authenticated = True
+                    st.rerun()  # Use st.rerun() instead of st.experimental_rerun()
+                else:
+                    st.error("Incorrect password. Please try again.")
+            # Save password to localStorage
+            st.markdown(f"""
+                <script>
+                localStorage.setItem("password", "{password}");
+                </script>
+            """, unsafe_allow_html=True)
         return
 
     # Logo container with your logo
@@ -160,26 +198,6 @@ def main():
                 Get your API key here →
             </a>
         </label>
-    """, unsafe_allow_html=True)
-
-    # JavaScript to load API key from localStorage
-    st.markdown("""
-        <script>
-        // Load API key from localStorage when the page loads
-        function loadApiKey() {
-            const apiKey = localStorage.getItem("gemini_api_key");
-            if (apiKey) {
-                document.getElementById("apiKey").value = apiKey;
-            }
-        }
-        window.onload = loadApiKey;
-
-        // Save API key to localStorage when the input changes
-        function saveApiKey() {
-            const apiKey = document.getElementById("apiKey").value;
-            localStorage.setItem("gemini_api_key", apiKey);
-        }
-        </script>
     """, unsafe_allow_html=True)
 
     # API Key Input with placeholder
