@@ -139,7 +139,6 @@ def main():
             border-radius: 8px;
             padding: 16px;
             margin-bottom: 20px;
-            background-color: #fff;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         .facebook-post-header {
@@ -163,7 +162,6 @@ def main():
         }
         .facebook-post-header .post-info .post-time {
             font-size: 12px;
-            color: #606770;
         }
         .facebook-post-content {
             font-size: 14px;
