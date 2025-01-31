@@ -43,6 +43,13 @@ EMOJI_MAPPING = {
     "cocktail": "🍹",
 }
 
+# Valid user tokens (replace with your team's tokens)
+VALID_TOKENS = {
+    "user1_token": "d3f8c1a7-42e9-4b6a-9f3d-7a1b2c8e65f4",
+    "user2_token": "d07c5e8a-34f1-49b2-a6d7-92e3b8f4c1a5",
+    "user3_token": "f2e4c6b8-91a3-4d5a-7f0b-38d7c1e9a2f5",
+}
+
 # Function to get a dynamic emoji based on the recipe name
 def get_dynamic_emoji(recipe_name):
     recipe_name_lower = recipe_name.lower()
@@ -307,19 +314,20 @@ def main():
         </style>
     """, unsafe_allow_html=True)
 
-    # Password check
+    # Token-based access control
     if 'authenticated' not in st.session_state:
         st.session_state.authenticated = False
 
     if not st.session_state.authenticated:
-        if "password" not in st.secrets:
-            st.error("Password key is missing in secrets. Please check your secrets configuration.")
-        else:
-            if st.secrets["password"]:
+        st.title("Access Control")
+        user_token = st.text_input("Enter your access token:", type="password")
+
+        if st.button("Validate Token"):
+            if user_token in VALID_TOKENS.values():
                 st.session_state.authenticated = True
-                st.rerun()  # Use st.rerun() instead of st.experimental_rerun()
+                st.rerun()
             else:
-                st.error("Incorrect password. Please try again.")
+                st.error("Invalid token. Please try again.")
         return
 
     # Logo container with your logo
