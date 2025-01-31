@@ -4,12 +4,13 @@ import pandas as pd
 
 # API configurations
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+RECRAFT_API_URL = "https://api.recraft.ai/v1/generate"  # Example URL, replace with actual Recraft API URL
 
 # Language options for recipes
 LANGUAGES = {
     "🇬🇧 English": "Generate a detailed recipe post in English in the following structured format:",
     "🇪🇸 Spanish": "Genera una publicación detallada de una receta en español en el siguiente formato estructurado:",
-    "🇩🇪 German": "Erstellen Sie einen detaillierten Rezeptbeitrag auf Deutsch im folgenden strukturierten Format:",
+    "🇩🇪 German": "Erstellen Sie einen detallierten Rezeptbeitrag auf Deutsch im folgenden strukturierten Format:",
     "🇫🇷 French": "Générez una publicación detallada de recette en français dans le format structuré suivant:",
     "🇸🇦 Arabic": "قم بإنشاء منشور وصفة تفصيلي باللغة العربية بالتنسيق المنظم التالي:"
 }
@@ -253,6 +254,32 @@ def generate_recipe_schema(recipe_name):
     """
     return generate_content(prompt)
 
+# Function to generate images using Recraft API
+def generate_recraft_image(prompt):
+    try:
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {st.session_state.recraft_api_key}"
+        }
+        
+        payload = {
+            "prompt": prompt,
+            "num_images": 1,  # Number of images to generate
+            "size": "512x512"  # Image size
+        }
+        
+        response = requests.post(RECRAFT_API_URL, headers=headers, json=payload)
+        
+        if response.status_code == 200:
+            image_url = response.json().get("data", [{}])[0].get("url", "")
+            return image_url
+        else:
+            st.error(f"Recraft API Error: {response.status_code} - {response.text}")
+            return None
+    except Exception as e:
+        st.error(f"Error generating image with Recraft: {e}")
+        return None
+
 # Streamlit app
 def main():
     # Custom CSS to center the logo and handle RTL for Arabic
@@ -379,9 +406,38 @@ def main():
             </script>
         """, unsafe_allow_html=True)
 
+    # Custom HTML for Recraft API Key Input Label
+    st.markdown("""
+        <label class="api-key-label">
+            Recraft API Key
+            <a href="https://recraft.ai/api" target="_blank" rel="noopener noreferrer" class="api-key-link">
+                Get your API key here →
+            </a>
+        </label>
+    """, unsafe_allow_html=True)
+
+    # Recraft API Key Input with placeholder
+    recraft_api_key = st.text_input(
+        "",  # Empty label since we're using custom HTML above
+        type="password",
+        value="",
+        key="recraftApiKey",
+        on_change=None,
+        placeholder="Enter your Recraft API key"  # Placeholder for API key input
+    )
+
+    # Save Recraft API key to localStorage when the user inputs it
+    if recraft_api_key:
+        st.session_state.recraft_api_key = recraft_api_key
+        st.markdown(f"""
+            <script>
+            localStorage.setItem("recraft_api_key", "{recraft_api_key}");
+            </script>
+        """, unsafe_allow_html=True)
+
     # Navigation bar in the sidebar
     st.sidebar.title("Navigation")
-    app_mode = st.sidebar.radio("Choose a mode", ["Generate Recipe", "SEO-Optimized Article Generator", "Recipe Generator from CSV"])
+    app_mode = st.sidebar.radio("Choose a mode", ["Generate Recipe", "SEO-Optimized Article Generator", "Recipe Generator from CSV", "Generate Images with Recraft"])
 
     if app_mode == "Generate Recipe":
         # Recipe name input with placeholder
@@ -520,6 +576,28 @@ def main():
                     file_name="generated_recipes.csv",
                     mime="text/csv"
                 )
+
+    elif app_mode == "Generate Images with Recraft":
+        st.title("Generate Images with Recraft")
+
+        # Prompt input for image generation
+        image_prompt = st.text_input(
+            "Enter a prompt for the image:",
+            placeholder="e.g., A delicious chocolate cake on a table, A bowl of fresh salad, etc."
+        )
+
+        if st.button("Generate Image"):
+            if image_prompt:
+                if 'recraft_api_key' not in st.session_state:
+                    st.warning("Please enter your Recraft API key.")
+                else:
+                    image_url = generate_recraft_image(image_prompt)
+                    if image_url:
+                        st.image(image_url, caption="Generated Image", use_column_width=True)
+                    else:
+                        st.error("Failed to generate image.")
+            else:
+                st.warning("Please enter a prompt for the image.")
 
 if __name__ == "__main__":
     main()
