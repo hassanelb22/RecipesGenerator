@@ -5,7 +5,7 @@ from datetime import datetime
 # API configurations
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
 
-# Language options
+# Language options for recipes
 LANGUAGES = {
     "🇬🇧 English": "Generate a detailed recipe post in English in the following structured format:",
     "🇪🇸 Spanish": "Genera una publicación detallada de una receta en español en el siguiente formato estructurado:",
@@ -101,6 +101,39 @@ def generate_recipe_post_gemini(recipe_name_or_text, language):
         st.error(f"Error generating recipe post with Gemini: {e}")
         return None
 
+# Function to generate an SEO-optimized article using Gemini API
+def generate_seo_article_gemini(topic, language):
+    try:
+        headers = {
+            "Content-Type": "application/json"
+        }
+        
+        prompt = f"Generate an SEO-optimized article in {language} on the topic: {topic}. Include relevant keywords, headings, and a conclusion."
+        
+        payload = {
+            "contents": [{
+                "parts": [{
+                    "text": prompt
+                }]
+            }]
+        }
+        
+        params = {
+            "key": st.session_state.gemini_api_key
+        }
+        
+        response = requests.post(GEMINI_API_URL, headers=headers, json=payload, params=params)
+        
+        if response.status_code == 200:
+            generated_text = response.json().get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "").strip()
+            return generated_text
+        else:
+            st.error(f"Gemini API Error: {response.status_code} - {response.text}")
+            return None
+    except Exception as e:
+        st.error(f"Error generating SEO article with Gemini: {e}")
+        return None
+
 # Function to generate MidJourney prompt (Version 1)
 def generate_midjourney_prompt_v1(recipe):
     prompt = f"{recipe} STYLE: amateur Close-up Shot | EMOTION: Tempting | SCENE: kitchen | TAGS: amateur food photography, clean composition, dramatic lighting, mouth-watering | CAMERA: iphone 15 pro max | SHOT TYPE: Close-up | COMPOSITION: top side view Centered | LIGHTING: Soft directional light | TIME: Daytime | LOCATION TYPE: Kitchen near windows --ar 1:1"
@@ -162,8 +195,6 @@ def main():
         .facebook-post-header .post-info .post-time {
             font-size: 12px;
         }
-        
-        
         </style>
     """, unsafe_allow_html=True)
 
@@ -239,71 +270,98 @@ def main():
             </script>
         """, unsafe_allow_html=True)
 
-    # Recipe name input with placeholder
-    recipe_name = st.text_input(
-        "Enter the recipe name:",
-        placeholder="e.g., Chocolate Cake, Spaghetti Carbonara, etc."  # Placeholder for recipe name input
-    )
+    # Navigation bar in the sidebar
+    st.sidebar.title("Navigation")
+    app_mode = st.sidebar.radio("Choose a mode", ["Generate Recipe", "Generate SEO Article"])
 
-    # Language selection
-    language = st.selectbox("Select Language:", list(LANGUAGES.keys()))
+    if app_mode == "Generate Recipe":
+        # Recipe name input with placeholder
+        recipe_name = st.text_input(
+            "Enter the recipe name:",
+            placeholder="e.g., Chocolate Cake, Spaghetti Carbonara, etc."  # Placeholder for recipe name input
+        )
 
-    # Custom CSS to make the button full width
-    st.markdown("""
-        <style>
-        .stButton > button {
-            width: 100%;
-        }
-        </style>
-    """, unsafe_allow_html=True)
+        # Language selection
+        language = st.selectbox("Select Language:", list(LANGUAGES.keys()))
 
-    if st.button("Generate Recipe"):
-        if recipe_name:
-            if 'gemini_api_key' not in st.session_state:
-                st.warning("Please enter your Gemini API key.")
-            else:
-                recipe_post = generate_recipe_post_gemini(recipe_name, language)
-                if recipe_post:
-                    # Facebook-like post styling
-                    st.markdown(f"""
-<div class="facebook-post">
-    <div class="facebook-post-header">
-        <div style="display: flex; align-items: center;">
-            <img src="https://raw.githubusercontent.com/hassanelb22/RecipesGenerator/refs/heads/main/assets/recipe-generator.png" alt="Profile Image">
-            <div class="post-info">
-                <div class="page-name">
-                    Recipe Generator
-                    <svg viewBox="0 0 12 13" width="12" height="12" fill="#007bff" title="Verified account" style="margin-left: 4px;">
-                        <title>Verified account</title>
-                        <g fill-rule="evenodd" transform="translate(-98 -917)">
-                            <path d="m106.853 922.354-3.5 3.5a.499.499 0 0 1-.706 0l-1.5-1.5a.5.5 0 1 1 .706-.708l1.147 1.147 3.147-3.147a.5.5 0 1 1 .706.708m3.078 2.295-.589-1.149.588-1.15a.633.633 0 0 0-.219-.82l-1.085-.7-.065-1.287a.627.627 0 0 0-.6-.603l-1.29-.066-.703-1.087a.636.636 0 0 0-.82-.217l-1.148.588-1.15-.588a.631.631 0 0 0-.82.22l-.701 1.085-1.289.065a.626.626 0 0 0-.6.6l-.066 1.29-1.088.702a.634.634 0 0 0-.216.82l.588 1.149-.588 1.15a.632.632 0 0 0 .219.819l1.085.701.065 1.286c.014.33.274.59.6.604l1.29.065.703 1.088c.177.27.53.362.82.216l1.148-.588 1.15.589a.629.629 0 0 0 .82-.22l.701-1.085 1.286-.064a.627.627 0 0 0 .604-.601l.065-1.29 1.088-.703a.633.633 0 0 0 .216-.819"></path>
-                        </g>
-                    </svg>
+        # Custom CSS to make the button full width
+        st.markdown("""
+            <style>
+            .stButton > button {
+                width: 100%;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+
+        if st.button("Generate Recipe"):
+            if recipe_name:
+                if 'gemini_api_key' not in st.session_state:
+                    st.warning("Please enter your Gemini API key.")
+                else:
+                    recipe_post = generate_recipe_post_gemini(recipe_name, language)
+                    if recipe_post:
+                        # Facebook-like post styling
+                        st.markdown(f"""
+        <div class="facebook-post">
+            <div class="facebook-post-header">
+                <div style="display: flex; align-items: center;">
+                    <img src="https://raw.githubusercontent.com/hassanelb22/RecipesGenerator/refs/heads/main/assets/recipe-generator.png" alt="Profile Image">
+                    <div class="post-info">
+                        <div class="page-name">
+                            Recipe Generator
+                            <svg viewBox="0 0 12 13" width="12" height="12" fill="#007bff" title="Verified account" style="margin-left: 4px;">
+                                <title>Verified account</title>
+                                <g fill-rule="evenodd" transform="translate(-98 -917)">
+                                    <path d="m106.853 922.354-3.5 3.5a.499.499 0 0 1-.706 0l-1.5-1.5a.5.5 0 1 1 .706-.708l1.147 1.147 3.147-3.147a.5.5 0 1 1 .706.708m3.078 2.295-.589-1.149.588-1.15a.633.633 0 0 0-.219-.82l-1.085-.7-.065-1.287a.627.627 0 0 0-.6-.603l-1.29-.066-.703-1.087a.636.636 0 0 0-.82-.217l-1.148.588-1.15-.588a.631.631 0 0 0-.82.22l-.701 1.085-1.289.065a.626.626 0 0 0-.6.6l-.066 1.29-1.088.702a.634.634 0 0 0-.216.82l.588 1.149-.588 1.15a.632.632 0 0 0 .219.819l1.085.701.065 1.286c.014.33.274.59.6.604l1.29.065.703 1.088c.177.27.53.362.82.216l1.148-.588 1.15.589a.629.629 0 0 0 .82-.22l.701-1.085 1.286-.064a.627.627 0 0 0 .604-.601l.065-1.29 1.088-.703a.633.633 0 0 0 .216-.819"></path>
+                                </g>
+                            </svg>
+                        </div>
+                        <div class="post-time">Just now</div>
+                    </div>
                 </div>
-                <div class="post-time">Just now</div>
+            </div>
+            <div class="facebook-post-content">
+                {recipe_post}
             </div>
         </div>
-    </div>
-    <div class="facebook-post-content">
-        {recipe_post}
-    </div>
-</div>
-                    """, unsafe_allow_html=True)
+                        """, unsafe_allow_html=True)
 
-                    # Add space between recipe and MidJourney prompts
-                    st.markdown('<div class="spacer"></div>', unsafe_allow_html=True)
+                        # Add space between recipe and MidJourney prompts
+                        st.markdown('<div class="spacer"></div>', unsafe_allow_html=True)
 
-                    # Generate MidJourney Prompt (Version 1)
-                    midjourney_prompt_v1 = generate_midjourney_prompt_v1(recipe_name)
-                    st.subheader("MidJourney Prompt (Version 1):")
-                    st.code(midjourney_prompt_v1, language="text")
+                        # Generate MidJourney Prompt (Version 1)
+                        midjourney_prompt_v1 = generate_midjourney_prompt_v1(recipe_name)
+                        st.subheader("MidJourney Prompt (Version 1):")
+                        st.code(midjourney_prompt_v1, language="text")
 
-                    # Generate MidJourney Prompt (Version 2)
-                    midjourney_prompt_v2 = generate_midjourney_prompt_v2(recipe_name)
-                    st.subheader("MidJourney Prompt (Version 2):")
-                    st.code(midjourney_prompt_v2, language="text")
-        else:
-            st.warning("Please enter a recipe name.")
+                        # Generate MidJourney Prompt (Version 2)
+                        midjourney_prompt_v2 = generate_midjourney_prompt_v2(recipe_name)
+                        st.subheader("MidJourney Prompt (Version 2):")
+                        st.code(midjourney_prompt_v2, language="text")
+            else:
+                st.warning("Please enter a recipe name.")
+
+    elif app_mode == "Generate SEO Article":
+        # Topic input for SEO article
+        topic = st.text_input(
+            "Enter the topic for the SEO article:",
+            placeholder="e.g., Digital Marketing Trends, Healthy Eating Habits, etc."
+        )
+
+        # Language selection for SEO article
+        language = st.selectbox("Select Language:", list(LANGUAGES.keys()))
+
+        if st.button("Generate SEO Article"):
+            if topic:
+                if 'gemini_api_key' not in st.session_state:
+                    st.warning("Please enter your Gemini API key.")
+                else:
+                    seo_article = generate_seo_article_gemini(topic, language)
+                    if seo_article:
+                        st.subheader("Generated SEO Article:")
+                        st.write(seo_article)
+            else:
+                st.warning("Please enter a topic for the SEO article.")
 
 if __name__ == "__main__":
     main()
