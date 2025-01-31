@@ -144,6 +144,7 @@ def main():
         .facebook-post-header {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             margin-bottom: 12px;
         }
         .facebook-post-header img {
@@ -162,6 +163,17 @@ def main():
         }
         .facebook-post-header .post-info .post-time {
             font-size: 12px;
+        }
+        .facebook-post-header .follow-button {
+            background-color: #1877f2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
         }
         .facebook-post-content {
             font-size: 14px;
@@ -271,11 +283,14 @@ def main():
                     st.markdown(f"""
                         <div class="facebook-post">
                             <div class="facebook-post-header">
-                                <img src="https://raw.githubusercontent.com/hassanelb22/RecipesGenerator/refs/heads/main/assets/recipe-generator.png" alt="Profile Image">
-                                <div class="post-info">
-                                    <div class="page-name">Recipes Generator</div>
-                                    <div class="post-time">Just now</div>
+                                <div style="display: flex; align-items: center;">
+                                    <img src="https://raw.githubusercontent.com/hassanelb22/RecipesGenerator/refs/heads/main/assets/recipe-generator.png" alt="Profile Image">
+                                    <div class="post-info">
+                                        <div class="page-name">Recipes Generator</div>
+                                        <div class="post-time">Just now</div>
+                                    </div>
                                 </div>
+                                <a href="https://your-website.com" class="follow-button" target="_blank">Follow</a>
                             </div>
                             <div class="facebook-post-content">
                                 {recipe_post}
