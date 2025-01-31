@@ -108,104 +108,12 @@ def generate_seo_article_gemini(topic, language):
             "Content-Type": "application/json"
         }
         
-        # Step 1: Generate Meta Titles
-        meta_title_prompt = f"""
-        You are an expert copywriter who writes catchy, SEO-friendly blog titles in a friendly tone. Follow these rules:
-        1. Write 10 titles for "{topic}" using the exact phrase "{topic}".
-        2. Keep titles under 65 characters.
-        3. Make sure the focus keyword appears at the beginning of the title.
-        4. Use hooks like "How," "Why," or "Best" to spark curiosity.
-        5. Mix formats: listicles, questions, and how-tos.
-        6. Avoid quotes, markdown, or self-references.
-        7. Prioritize SEO keywords related to "{topic}".
-        8. Title should contain a number.
-        """
+        prompt = f"Generate an SEO-optimized article in {language} on the topic: {topic}. Include relevant keywords, headings, and a conclusion."
         
-        # Step 2: Generate Meta Descriptions
-        meta_description_prompt = f"""
-        You are an SEO-savvy content strategist who writes compelling blog descriptions. Follow these rules:
-        1. Write 10 descriptions for the blog post titled "{topic}".
-        2. Use the exact phrase "{topic}" naturally in each description.
-        3. Keep descriptions under 160 characters (ideal for SEO).
-        4. Start with a hook: ask a question, use action verbs, or highlight a pain point.
-        5. Include SEO keywords related to "{topic}" and address user intent (e.g., tips, solutions).
-        6. End with a subtle CTA like *Discover, Learn, Try*.
-        7. Avoid quotes, markdown, or self-references.
-        8. Maintain a friendly, conversational tone.
-        """
-        
-        # Step 3: Create Detailed Outlines
-        outline_prompt = f"""
-        Act as a professional Copywriter and SEO specialist. Write an outline for a WordPress blog post based on "{topic}" using "{topic}" as a focus keyword. Don’t include title and description in your results and make sure you use proper heading structure.
-        """
-        
-        # Step 4: Write Content Based on Detailed Outlines
-        content_prompt = f"""
-        You are a professional Copywriter and SEO specialist. Write the content of this outline that I will provide you in this prompt and you need to follow the exact Instructions below:
-        Instructions:
-        1. Focus keyword: "{topic}"
-        2. Content length: 1200 words.
-        3. Tone: Friendly, engaging, and easy to read (4th-grade reading level).
-        4. Structure: Follow the blog outline provided. Use headings and subheadings with the focus keyword naturally integrated.
-        5. SEO:
-           - Include the focus keyword in the first 100 words, headings, and 2-3 times per 300 words.
-           - Add related keywords where relevant.
-        6. Audience: Write for readers who are interested in "{topic}".
-        7. Formatting:
-           ○ Use detailed paragraphs.
-           ○ Include bullet points, lists, or numbered steps if necessary.
-           ○ End with a strong call-to-action.
-        8. Additional Notes: Keep the content conversational and engaging. Avoid fluff or overly technical language.
-        Blog Outline:
-        [Insert your blog outline here]
-        """
-        
-        # Step 5: Write Content Based on Custom Prompt
-        custom_prompt = f"""
-        Act as a professional recipe blogger and SEO specialist. Write a 1,000+ word WordPress blog post for "{topic}" using "{topic}" as a focus keyword. Follow this structure and guidelines strictly:
-        Introduction
-        Write a 200-word captivating introduction using friendly and simple words for a recipe blog post about "{topic}". Start with a strong hook that highlights the dish’s key qualities (e.g., creamy, flavorful, juicy). Include an interesting anecdote or fun fact about the recipe to grab attention. Describe why this dish is special and why readers should try it, emphasizing its simplicity, quick preparation time, and family-friendly appeal. Compare it briefly to another popular recipe on the blog to establish credibility and encourage readers to explore other content. End with a positive and inviting tone that makes the reader excited to try the recipe.
-        What is {topic}?
-        Write a conversational and engaging 120-word paragraph about the name of this recipe. Use a lighthearted and humorous tone, incorporating rhetorical questions to pique curiosity about the name’s origin. Add a playful anecdote about why it’s called this and include a classic saying like 'the way to a man’s heart is through his stomach.' End with an encouraging call to action that invites readers to try the recipe.
-        Why You’ll Love This {topic}:
-        Write a clear and engaging section about this recipe, focusing on three key aspects: the main highlight of the dish, the cost-saving benefits of making it at home, and the flavorful toppings or ingredients that make it special. Use descriptive language to appeal to the reader's senses and create a friendly tone throughout. Include a brief comparison to a related recipe, encouraging readers to explore more content. Ensure the section is well-structured, concise, and ends with a call to action that invites readers to try making the recipe at home.
-        How to Make {topic}:
-        ● Quick Overview
-        Offer a brief preview of what makes this dish easy, delicious, and satisfying. Highlight key features such as its simplicity, taste, and any standout elements like a creamy sauce or rich texture. Also, mention the preparation time to give the reader an idea of how long the recipe will take to make.
-        ● Key Ingredients for {topic}:
-        List all the ingredients needed to make the recipe. Include a high-quality image showing the ingredients to provide the reader with a clear visual representation of what’s required. Make sure each ingredient is listed clearly, including specific quantities and any special preparations needed.
-        ● Step-by-Step Instructions:
-        Break down the cooking process into clear, actionable steps with detailed instructions. Ensure each step is easy to follow and includes specific details about the ingredients, techniques, and timing involved. Use simple language and provide enough detail so that someone with minimal cooking experience can successfully complete the recipe.
-        What to Serve {topic} With:
-        Suggest complementary dishes, sides, or drinks that pair well with the recipe. Provide a few ideas that enhance the main dish and offer variety, considering flavors, textures, and overall meal balance.
-        Top Tips for Perfecting {topic}:
-        Offer valuable tips to enhance the cooking process or flavor. Include detailed advice on ingredient substitutions, timing adjustments, and common mistakes to avoid. Make sure the tips are practical and helpful for both beginners and experienced cooks.
-        Storing and Reheating Tips:
-        Provide practical advice on how to store leftovers and how long the dish stays fresh. Include detailed instructions on proper storage methods, such as refrigeration or freezing, and specify how long the dish can be kept. Also, offer guidance on how to reheat the dish for optimal taste or how to freeze it for future meals.
-        """
-        
-        # Step 6: Recipe Schema Markup
-        schema_prompt = f"""
-        Give me these info for "{topic}":
-        Preparation Time: ISO 8601 duration format.
-        Cooking Time: ISO 8601 duration format.
-        Total Time: ISO 8601 duration format.
-        Type of recipe: Type of dish, for example appetizer, or dessert.
-        Cuisine: The cuisine of the recipe.
-        Keywords: Other terms for your recipe such as the season, the holiday, or other descriptors. Separate multiple entries with commas.
-        Recipe Yield: Quantity produced by the recipe.
-        Calories: The number of calories in the recipes.
-        Recipe Ingredients: List all ingredients.
-        Pros: Use this section only for editorial reviews. Positive notes, add one item per line.
-        Cons: Negative notes, add one item per line.
-        Recipe Instructions: Provide detailed instructions.
-        """
-        
-        # Combine all prompts into one payload
         payload = {
             "contents": [{
                 "parts": [{
-                    "text": f"{meta_title_prompt}\n\n{meta_description_prompt}\n\n{outline_prompt}\n\n{content_prompt}\n\n{custom_prompt}\n\n{schema_prompt}"
+                    "text": prompt
                 }]
             }]
         }
