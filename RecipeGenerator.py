@@ -272,7 +272,7 @@ def main():
                                     <img src="https://raw.githubusercontent.com/hassanelb22/RecipesGenerator/refs/heads/main/assets/recipe-generator.png" alt="Profile Image">
                                     <div class="post-info">
                                         <div class="page-name">
-                                            Recipes Generator
+                                            Recipe Generator
                                             <svg viewBox="0 0 12 13" width="12" height="12" fill="currentColor" title="Verified account" style="--color: var(--accent); margin-left: 4px;">
                                                 <title>Verified account</title>
                                                 <g fill-rule="evenodd" transform="translate(-98 -917)">
