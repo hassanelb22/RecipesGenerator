@@ -434,7 +434,7 @@ def main():
     st.markdown("""
         <label class="api-key-label">
             Segmind API Key
-            <a href="https://segmind.com/api" target="_blank" rel="noopener noreferrer" class="api-key-link">
+            <a href="https://cloud.segmind.com/console/api-keys" target="_blank" rel="noopener noreferrer" class="api-key-link">
                 Get your API key here →
             </a>
         </label>
