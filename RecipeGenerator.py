@@ -129,60 +129,19 @@ def main():
         </style>
     """, unsafe_allow_html=True)
 
-    # JavaScript to load API key and password from localStorage
-    st.markdown("""
-        <script>
-        // Load API key and password from localStorage when the page loads
-        function loadFromLocalStorage() {
-            const apiKey = localStorage.getItem("gemini_api_key");
-            const password = localStorage.getItem("password");
-            if (apiKey) {
-                document.getElementById("apiKey").value = apiKey;
-            }
-            if (password) {
-                document.getElementById("password").value = password;
-            }
-        }
-        window.onload = loadFromLocalStorage;
-
-        // Save API key and password to localStorage when the input changes
-        function saveToLocalStorage(key, value) {
-            localStorage.setItem(key, value);
-        }
-        </script>
-    """, unsafe_allow_html=True)
-
-    # Initialize session state for authentication and API key
+    # Password check
     if 'authenticated' not in st.session_state:
         st.session_state.authenticated = False
-    if 'gemini_api_key' not in st.session_state:
-        st.session_state.gemini_api_key = ""
 
-    # Password check
     if not st.session_state.authenticated:
-        password = st.text_input(
-            "Enter Password:",
-            type="password",
-            key="password",
-            placeholder="Enter your password",
-            on_change=lambda: st.session_state.update({"password": st.session_state.password})
-        )
-
-        if password:
-            if "password" not in st.secrets:
-                st.error("Password key is missing in secrets. Please check your secrets configuration.")
+        if "password" not in st.secrets:
+            st.error("Password key is missing in secrets. Please check your secrets configuration.")
+        else:
+            if st.secrets["password"]:
+                st.session_state.authenticated = True
+                st.rerun()  # Use st.rerun() instead of st.experimental_rerun()
             else:
-                if password == st.secrets["password"]:
-                    st.session_state.authenticated = True
-                    st.rerun()  # Use st.rerun() instead of st.experimental_rerun()
-                else:
-                    st.error("Incorrect password. Please try again.")
-            # Save password to localStorage
-            st.markdown(f"""
-                <script>
-                localStorage.setItem("password", "{password}");
-                </script>
-            """, unsafe_allow_html=True)
+                st.error("Incorrect password. Please try again.")
         return
 
     # Logo container with your logo
@@ -203,13 +162,33 @@ def main():
         </label>
     """, unsafe_allow_html=True)
 
+    # JavaScript to load API key from localStorage
+    st.markdown("""
+        <script>
+        // Load API key from localStorage when the page loads
+        function loadApiKey() {
+            const apiKey = localStorage.getItem("gemini_api_key");
+            if (apiKey) {
+                document.getElementById("apiKey").value = apiKey;
+            }
+        }
+        window.onload = loadApiKey;
+
+        // Save API key to localStorage when the input changes
+        function saveApiKey() {
+            const apiKey = document.getElementById("apiKey").value;
+            localStorage.setItem("gemini_api_key", apiKey);
+        }
+        </script>
+    """, unsafe_allow_html=True)
+
     # API Key Input with placeholder
     gemini_api_key = st.text_input(
         "",  # Empty label since we're using custom HTML above
         type="password",
-        value=st.session_state.gemini_api_key,
+        value="",
         key="apiKey",
-        on_change=lambda: st.session_state.update({"gemini_api_key": st.session_state.apiKey}),
+        on_change=None,
         placeholder="Enter your Google API key"  # Placeholder for API key input
     )
 
@@ -242,7 +221,7 @@ def main():
 
     if st.button("Generate Recipe"):
         if recipe_name:
-            if not st.session_state.gemini_api_key:
+            if 'gemini_api_key' not in st.session_state:
                 st.warning("Please enter your Gemini API key.")
             else:
                 recipe_post = generate_recipe_post_gemini(recipe_name, language)
