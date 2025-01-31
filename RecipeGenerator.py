@@ -84,7 +84,7 @@ def generate_recipe_post_gemini(recipe_name_or_text, language):
         }
         
         params = {
-            "key": st.session_state.gemini_api_key
+            "key": st.secrets["gemini_api_key"]  # Retrieve API key from st.secrets
         }
         
         response = requests.post(GEMINI_API_URL, headers=headers, json=payload, params=params)
@@ -152,55 +152,6 @@ def main():
         unsafe_allow_html=True
     )
 
-    # Custom HTML for API Key Input Label
-    st.markdown("""
-        <label class="api-key-label">
-            Google GEMINI API Key
-            <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="api-key-link">
-                Get your API key here →
-            </a>
-        </label>
-    """, unsafe_allow_html=True)
-
-    # JavaScript to load API key from localStorage when the page loads
-    st.markdown("""
-        <script>
-        // Load API key from localStorage when the page loads
-        function loadApiKey() {
-            const apiKey = localStorage.getItem("gemini_api_key");
-            if (apiKey) {
-                document.getElementById("apiKey").value = apiKey;
-            }
-        }
-        window.onload = loadApiKey;
-
-        // Save API key to localStorage when the input changes
-        function saveApiKey() {
-            const apiKey = document.getElementById("apiKey").value;
-            localStorage.setItem("gemini_api_key", apiKey);
-        }
-        </script>
-    """, unsafe_allow_html=True)
-
-    # API Key Input with placeholder
-    gemini_api_key = st.text_input(
-        "",  # Empty label since we're using custom HTML above
-        type="password",
-        value="",
-        key="apiKey",
-        on_change=None,
-        placeholder="Enter your Google API key"  # Placeholder for API key input
-    )
-
-    # Save API key to localStorage when the user inputs it
-    if gemini_api_key:
-        st.session_state.gemini_api_key = gemini_api_key
-        st.markdown(f"""
-            <script>
-            localStorage.setItem("gemini_api_key", "{gemini_api_key}");
-            </script>
-        """, unsafe_allow_html=True)
-
     # Recipe name input with placeholder
     recipe_name = st.text_input(
         "Enter the recipe name:",
@@ -221,8 +172,8 @@ def main():
 
     if st.button("Generate Recipe"):
         if recipe_name:
-            if 'gemini_api_key' not in st.session_state:
-                st.warning("Please enter your Gemini API key.")
+            if "gemini_api_key" not in st.secrets:
+                st.error("Gemini API key is missing in secrets. Please check your secrets configuration.")
             else:
                 recipe_post = generate_recipe_post_gemini(recipe_name, language)
                 if recipe_post:
