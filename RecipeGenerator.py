@@ -9,7 +9,8 @@ LANGUAGES = {
     "🇬🇧 English": "Generate a detailed recipe post in English in the following structured format:",
     "🇪🇸 Spanish": "Genera una publicación detallada de una receta en español en el siguiente formato estructurado:",
     "🇩🇪 German": "Erstellen Sie einen detaillierten Rezeptbeitrag auf Deutsch im folgenden strukturierten Format:",
-    "🇫🇷 French": "Générez una publicación detallada de recette en français dans le format structuré suivant:"
+    "🇫🇷 French": "Générez una publicación detallada de recette en français dans le format structuré suivant:",
+    "🇸🇦 Arabic": "قم بإنشاء منشور وصفة تفصيلي باللغة العربية بالتنسيق المنظم التالي:"
 }
 
 # Emoji mapping based on recipe keywords
