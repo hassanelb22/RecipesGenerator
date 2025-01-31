@@ -188,7 +188,7 @@ def main():
     # Logo container with your logo
     st.markdown(
         '<div class="logo-container">'
-        '<img src="https://i.ibb.co/ZpdDQDr2/recipe-generator.png" alt="Recipe Generator Logo">'
+        '<img src="https://raw.githubusercontent.com/hassanelb22/RecipesGenerator/refs/heads/main/assets/recipe-generator.png" alt="Recipe Generator Logo">'
         '</div>',
         unsafe_allow_html=True
     )
@@ -271,7 +271,7 @@ def main():
                     st.markdown(f"""
                         <div class="facebook-post">
                             <div class="facebook-post-header">
-                                <img src="https://i.ibb.co/ZpdDQDr2/recipe-generator.png" alt="Profile Image">
+                                <img src="https://raw.githubusercontent.com/hassanelb22/RecipesGenerator/refs/heads/main/assets/recipe-generator.png" alt="Profile Image">
                                 <div class="post-info">
                                     <div class="page-name">Recipes Generator</div>
                                     <div class="post-time">Just now</div>
