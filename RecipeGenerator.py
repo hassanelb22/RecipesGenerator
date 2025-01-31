@@ -152,10 +152,13 @@ def main():
         </script>
     """, unsafe_allow_html=True)
 
-    # Password check
+    # Initialize session state for authentication and API key
     if 'authenticated' not in st.session_state:
         st.session_state.authenticated = False
+    if 'gemini_api_key' not in st.session_state:
+        st.session_state.gemini_api_key = ""
 
+    # Password check
     if not st.session_state.authenticated:
         password = st.text_input(
             "Enter Password:",
@@ -204,9 +207,9 @@ def main():
     gemini_api_key = st.text_input(
         "",  # Empty label since we're using custom HTML above
         type="password",
-        value="",
+        value=st.session_state.gemini_api_key,
         key="apiKey",
-        on_change=None,
+        on_change=lambda: st.session_state.update({"gemini_api_key": st.session_state.apiKey}),
         placeholder="Enter your Google API key"  # Placeholder for API key input
     )
 
@@ -239,7 +242,7 @@ def main():
 
     if st.button("Generate Recipe"):
         if recipe_name:
-            if 'gemini_api_key' not in st.session_state:
+            if not st.session_state.gemini_api_key:
                 st.warning("Please enter your Gemini API key.")
             else:
                 recipe_post = generate_recipe_post_gemini(recipe_name, language)
