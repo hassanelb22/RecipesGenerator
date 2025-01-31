@@ -132,11 +132,14 @@ def process_csv(file_path, language, api_key):
     for recipe_name in df["recipe_name"]:
         recipe_post = generate_recipe_post_gemini(recipe_name, language)
         if recipe_post:
+            # Remove *** from the generated recipe text
+            recipe_post = recipe_post.replace("***", "")
+            
             midjourney_prompt_v1 = generate_midjourney_prompt_v1(recipe_name)
             midjourney_prompt_v2 = generate_midjourney_prompt_v2(recipe_name)
             results.append({
                 "recipe_name": recipe_name,
-                "generated_recipe": recipe_post,
+                "generated_recipe": recipe_post,  # Use the cleaned text
                 "midjourney_prompt_v1": midjourney_prompt_v1,
                 "midjourney_prompt_v2": midjourney_prompt_v2
             })
