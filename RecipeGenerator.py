@@ -45,9 +45,9 @@ EMOJI_MAPPING = {
 
 # Valid user tokens (replace with your team's tokens)
 VALID_TOKENS = {
-    "user1_token": "d3f8c1a7-42e9-4b6a-9f3d-7a1b2c8e65f4",
-    "user2_token": "d07c5e8a-34f1-49b2-a6d7-92e3b8f4c1a5",
-    "user3_token": "f2e4c6b8-91a3-4d5a-7f0b-38d7c1e9a2f5",
+    "user1_token": "token1",
+    "user2_token": "token2",
+    "user3_token": "token3",
 }
 
 # Function to get a dynamic emoji based on the recipe name
