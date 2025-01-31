@@ -112,7 +112,7 @@ def generate_midjourney_prompt_v2(recipe):
 
 # Streamlit app
 def main():
-    # Custom CSS to center the logo
+    # Custom CSS to center the logo and handle RTL for Arabic
     st.markdown("""
         <style>
         .logo-container {
@@ -126,6 +126,11 @@ def main():
         }
         .spacer {
             margin-top: 30px; /* Space between recipe and MidJourney prompts */
+        }
+        .rtl-text {
+            direction: rtl;
+            text-align: right;
+            font-family: 'Arial', sans-serif;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -228,7 +233,11 @@ def main():
                 recipe_post = generate_recipe_post_gemini(recipe_name, language)
                 if recipe_post:
                     st.subheader("Generated Recipe Post:")
-                    st.write(recipe_post)
+                    # Apply RTL styling if Arabic is selected
+                    if language == "🇸🇦 Arabic":
+                        st.markdown(f'<div class="rtl-text">{recipe_post}</div>', unsafe_allow_html=True)
+                    else:
+                        st.write(recipe_post)
 
                     # Add space between recipe and MidJourney prompts
                     st.markdown('<div class="spacer"></div>', unsafe_allow_html=True)
