@@ -132,6 +132,22 @@ def main():
             text-align: right;
             font-family: 'Arial', sans-serif;
         }
+        .copy-button {
+            margin-top: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .copy-button:hover {
+            background-color: #45a049;
+        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -184,6 +200,15 @@ def main():
         function saveApiKey() {
             const apiKey = document.getElementById("apiKey").value;
             localStorage.setItem("gemini_api_key", apiKey);
+        }
+
+        // Copy text to clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Copied to clipboard!");
+            }).catch(() => {
+                alert("Failed to copy text.");
+            });
         }
         </script>
     """, unsafe_allow_html=True)
@@ -239,6 +264,13 @@ def main():
                     else:
                         st.write(recipe_post)
 
+                    # Add a "Copy to Clipboard" button for the recipe post
+                    st.markdown(f"""
+                        <button class="copy-button" onclick="copyToClipboard(`{recipe_post}`)">
+                            Copy Recipe to Clipboard
+                        </button>
+                    """, unsafe_allow_html=True)
+
                     # Add space between recipe and MidJourney prompts
                     st.markdown('<div class="spacer"></div>', unsafe_allow_html=True)
 
@@ -249,7 +281,7 @@ def main():
 
                     # Copy to Clipboard Button for Version 1
                     st.markdown(f"""
-                        <button onclick="navigator.clipboard.writeText(`{midjourney_prompt_v1}`)" style="margin-top: 10px;">
+                        <button class="copy-button" onclick="copyToClipboard(`{midjourney_prompt_v1}`)">
                             Copy MidJourney Prompt (Version 1) to Clipboard
                         </button>
                     """, unsafe_allow_html=True)
@@ -261,7 +293,7 @@ def main():
 
                     # Copy to Clipboard Button for Version 2
                     st.markdown(f"""
-                        <button onclick="navigator.clipboard.writeText(`{midjourney_prompt_v2}`)" style="margin-top: 10px;">
+                        <button class="copy-button" onclick="copyToClipboard(`{midjourney_prompt_v2}`)">
                             Copy MidJourney Prompt (Version 2) to Clipboard
                         </button>
                     """, unsafe_allow_html=True)
