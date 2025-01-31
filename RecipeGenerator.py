@@ -275,9 +275,9 @@ def generate_segmind_image(prompt):
         response = requests.post(SEGMIND_API_URL, headers=headers, json=payload)
         
         # Debug: Print the response status code and content
-        st.write("API Response Status Code:", response.status_code)
-        st.write("API Response Content Type:", response.headers.get("Content-Type"))
-        st.write("API Response Content (first 100 characters):", response.text[:100])
+        #st.write("API Response Status Code:", response.status_code)
+        #st.write("API Response Content Type:", response.headers.get("Content-Type"))
+        #st.write("API Response Content (first 100 characters):", response.text[:100])
         
         if response.status_code == 200:
             # Check if the response is an image (binary data)
