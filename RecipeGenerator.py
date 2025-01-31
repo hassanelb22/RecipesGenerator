@@ -233,7 +233,6 @@ def main():
             else:
                 recipe_post = generate_recipe_post_gemini(recipe_name, language)
                 if recipe_post:
-                    st.subheader("Generated Recipe Post:")
                     # Apply RTL styling if Arabic is selected
                     if language == "🇸🇦 Arabic":
                         st.markdown(f'<div class="rtl-text">{recipe_post}</div>', unsafe_allow_html=True)
