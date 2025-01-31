@@ -135,9 +135,6 @@ def main():
             font-family: 'Almarai', serif;
         }
         .facebook-post {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 16px;
             margin-bottom: 20px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
@@ -159,16 +156,14 @@ def main():
         }
         .facebook-post-header .post-info .page-name {
             font-weight: bold;
-            font-size: 14px;
+            font-size: 16px;
         }
         .facebook-post-header .post-info .post-time {
             font-size: 12px;
         }
         .facebook-post-header .follow-button {
-            background-color: #1877f2;
-            color: white;
+            color: #1877f2;
             border: none;
-            border-radius: 6px;
             padding: 6px 12px;
             font-size: 12px;
             font-weight: bold;
