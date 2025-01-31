@@ -130,7 +130,8 @@ def main():
         .rtl-text {
             direction: rtl;
             text-align: right;
-            font-family: 'Arial', sans-serif;
+            font-weight: 400;
+            font-family: 'Almarai', serif;
         }
         </style>
     """, unsafe_allow_html=True)
