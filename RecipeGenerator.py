@@ -161,19 +161,8 @@ def main():
         .facebook-post-header .post-info .post-time {
             font-size: 12px;
         }
-        .facebook-post-header .follow-button {
-            color: #1877f2;
-            border: none;
-            padding: 6px 12px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        .facebook-post-content {
-            font-size: 14px;
-            line-height: 1.5;
-        }
+
+       
         </style>
     """, unsafe_allow_html=True)
 
@@ -285,7 +274,6 @@ def main():
                                         <div class="post-time">Just now</div>
                                     </div>
                                 </div>
-                                <a href="https://your-website.com" class="follow-button" target="_blank">Follow</a>
                             </div>
                             <div class="facebook-post-content">
                                 {recipe_post}
