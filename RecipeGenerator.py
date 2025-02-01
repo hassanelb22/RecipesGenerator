@@ -10,7 +10,7 @@ SEGMIND_API_URL = "https://api.segmind.com/v1/recraft-v3"  # Segmind API URL
 LANGUAGES = {
     "🇬🇧 English": "Generate a detailed recipe post in English in the following structured format:",
     "🇪🇸 Spanish": "Genera una publicación detallada de una receta en español en el siguiente formato estructurado:",
-    "🇩🇪 German": "Erstellen Sie einen detaillierten Rezeptbeitrag auf Deutsch im folgenden strukturierten Format:",
+    "🇩🇪 German": "Erstellen Sie einen detallierten Rezeptbeitrag auf Deutsch im folgenden strukturierten Format:",
     "🇫🇷 French": "Générez una publicación detallada de recette en français dans le format structuré suivant:",
     "🇸🇦 Arabic": "قم بإنشاء منشور وصفة تفصيلي باللغة العربية بالتنسيق المنظم التالي:"
 }
@@ -87,7 +87,7 @@ def generate_recipe_post_gemini(recipe_name_or_text, language):
         }
         
         params = {
-            "key": st.session_state.gemini_api_key
+            "key": st.session_state.get("gemini_api_key", "")
         }
         
         response = requests.post(GEMINI_API_URL, headers=headers, json=payload, params=params)
@@ -163,7 +163,7 @@ def generate_content(prompt):
             }]
         }
         params = {
-            "key": st.session_state.gemini_api_key
+            "key": st.session_state.get("gemini_api_key", "")
         }
         response = requests.post(GEMINI_API_URL, headers=headers, json=payload, params=params)
         if response.status_code == 200:
@@ -258,7 +258,7 @@ def generate_recipe_schema(recipe_name):
 def generate_segmind_image(prompt):
     try:
         headers = {
-            "x-api-key": st.session_state.segmind_api_key,
+            "x-api-key": st.session_state.get("segmind_api_key", ""),
             "Content-Type": "application/json"
         }
         
@@ -419,7 +419,7 @@ def main():
         placeholder="Enter your Segmind API key"
     )
 
-    # Save API keys to localStorage when the user inputs them
+    # Save API keys to localStorage and session state when the user inputs them
     if gemini_api_key:
         st.session_state.gemini_api_key = gemini_api_key
         st.markdown(f"""
