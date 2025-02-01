@@ -502,6 +502,8 @@ def main():
             "Enter the focus keyword for the article:",
             placeholder="e.g., Healthy Eating Habits, Digital Marketing Trends, etc."
         )
+   # Language selection
+        language = st.selectbox("Select Language:", list(LANGUAGES.keys()))
 
         if st.button("Generate SEO-Optimized Article"):
             if focus_keyword:
