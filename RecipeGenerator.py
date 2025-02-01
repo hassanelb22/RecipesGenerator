@@ -374,7 +374,7 @@ def main():
         return
 
     # Navigation bar in the sidebar
-    st.sidebar.title("Navigation")
+    # st.sidebar.title("Navigation")
     st.sidebar.image("https://raw.githubusercontent.com/hassanelb22/RecipesGenerator/refs/heads/main/assets/recipe-generator.png", use_column_width=True)
     app_mode = st.sidebar.radio("Choose a mode", ["Generate Recipe", "SEO-Optimized Article Generator", "Recipe Generator from CSV", "Generate Images with Segmind"])
 
