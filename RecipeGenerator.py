@@ -4,13 +4,12 @@ import pandas as pd
 
 # API configurations
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
-SEGMIND_API_URL = "https://api.segmind.com/v1/recraft-v3"  # Segmind API URL
 
 # Language options for recipes
 LANGUAGES = {
     "🇬🇧 English": "Generate a detailed recipe post in English in the following structured format:",
     "🇪🇸 Spanish": "Genera una publicación detallada de una receta en español en el siguiente formato estructurado:",
-    "🇩🇪 German": "Erstellen Sie einen detallierten Rezeptbeitrag auf Deutsch im folgenden strukturierten Format:",
+    "🇩🇪 German": "Erstellen Sie einen detaillierten Rezeptbeitrag auf Deutsch im folgenden strukturierten Format:",
     "🇫🇷 French": "Générez una publicación detallada de recette en français dans le format structuré suivant:",
     "🇸🇦 Arabic": "قم بإنشاء منشور وصفة تفصيلي باللغة العربية بالتنسيق المنظم التالي:"
 }
@@ -254,56 +253,6 @@ def generate_recipe_schema(recipe_name):
     """
     return generate_content(prompt)
 
-# Function to generate images using Segmind API
-def generate_segmind_image(prompt):
-    try:
-        headers = {
-            "x-api-key": st.session_state.segmind_api_key,
-            "Content-Type": "application/json"
-        }
-        
-        payload = {
-            "prompt": prompt,
-            "size": "1024x1024",  # Image size
-            "style": "any"  # Style of the image
-        }
-        
-        # Debug: Print the payload being sent
-        # st.write("Sending payload to Segmind API:")
-        # st.write(payload)
-        
-        #response = requests.post(SEGMIND_API_URL, headers=headers, json=payload)
-        
-        # Debug: Print the response status code and content
-        #st.write("API Response Status Code:", response.status_code)
-        #st.write("API Response Content Type:", response.headers.get("Content-Type"))
-        #st.write("API Response Content (first 100 characters):", response.text[:100])
-        
-        if response.status_code == 200:
-            # Check if the response is an image (binary data)
-            if response.headers.get("Content-Type", "").startswith("image/"):
-                # The response is an image, so we can display it directly
-                st.write("API returned an image.")
-                return response.content  # Return the binary image data
-            else:
-                # The response is JSON or another format
-                response_json = response.json()
-                st.write("API Response JSON:", response_json)
-                
-                # Extract the image URL or data from the response
-                image_url = response_json.get("data", {}).get("url", "")
-                if image_url:
-                    return image_url
-                else:
-                    st.error("No image URL or binary data found in the API response.")
-                    return None
-        else:
-            st.error(f"Segmind API Error: {response.status_code} - {response.text}")
-            return None
-    except Exception as e:
-        st.error(f"Error generating image with Segmind: {e}")
-        return None
-
 # Streamlit app
 def main():
     # Custom CSS to center the logo and handle RTL for Arabic
@@ -373,38 +322,67 @@ def main():
                 st.error("Incorrect password. Please try again.")
         return
 
-    # Navigation bar in the sidebar
-    # st.sidebar.title("Navigation")
-    st.sidebar.image("https://raw.githubusercontent.com/hassanelb22/RecipesGenerator/refs/heads/main/assets/recipe-generator.png", use_column_width=True)
-    app_mode = st.sidebar.radio("Choose a mode", ["Generate Recipe", "SEO-Optimized Article Generator", "Recipe Generator from CSV", "Generate Images with Segmind"])
+    # Logo container with your logo
+    st.markdown(
+        '<div class="logo-container">'
+        '<img src="https://raw.githubusercontent.com/hassanelb22/RecipesGenerator/refs/heads/main/assets/recipe-generator.png" alt="Recipe Generator Logo">'
+        '</div>',
+        unsafe_allow_html=True
+    )
 
-    # API Key Input in the Sidebar
-    st.sidebar.markdown("### API Keys")
-    gemini_api_key = st.sidebar.text_input(
-        "Google Gemini API Key",
+    # Custom HTML for API Key Input Label
+    st.markdown("""
+        <label class="api-key-label">
+            Google GEMINI API Key
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="api-key-link">
+                Get your API key here →
+            </a>
+        </label>
+    """, unsafe_allow_html=True)
+
+    # JavaScript to load API key from localStorage
+    st.markdown("""
+        <script>
+        // Load API key from localStorage when the page loads
+        function loadApiKey() {
+            const apiKey = localStorage.getItem("gemini_api_key");
+            if (apiKey) {
+                document.getElementById("apiKey").value = apiKey;
+            }
+        }
+        window.onload = loadApiKey;
+
+        // Save API key to localStorage when the input changes
+        function saveApiKey() {
+            const apiKey = document.getElementById("apiKey").value;
+            localStorage.setItem("gemini_api_key", apiKey);
+        }
+        </script>
+    """, unsafe_allow_html=True)
+
+    # API Key Input with placeholder
+    gemini_api_key = st.text_input(
+        "",  # Empty label since we're using custom HTML above
         type="password",
         value="",
         key="apiKey",
         on_change=None,
-        placeholder="Enter your Google API key"
+        placeholder="Enter your Google API key"  # Placeholder for API key input
     )
 
-    segmind_api_key = st.sidebar.text_input(
-        "Segmind API Key",
-        type="password",
-        value="",
-        key="segmindApiKey",
-        on_change=None,
-        placeholder="Enter your Segmind API key"
-    )
-
-    # Save API keys to session state
+    # Save API key to localStorage when the user inputs it
     if gemini_api_key:
         st.session_state.gemini_api_key = gemini_api_key
-    if segmind_api_key:
-        st.session_state.segmind_api_key = segmind_api_key
+        st.markdown(f"""
+            <script>
+            localStorage.setItem("gemini_api_key", "{gemini_api_key}");
+            </script>
+        """, unsafe_allow_html=True)
 
-    # Rest of the code remains the same...
+    # Navigation bar in the sidebar
+    st.sidebar.title("Navigation")
+    app_mode = st.sidebar.radio("Choose a mode", ["Generate Recipe", "SEO-Optimized Article Generator", "Recipe Generator from CSV"])
+
     if app_mode == "Generate Recipe":
         # Recipe name input with placeholder
         recipe_name = st.text_input(
@@ -478,8 +456,6 @@ def main():
             "Enter the focus keyword for the article:",
             placeholder="e.g., Healthy Eating Habits, Digital Marketing Trends, etc."
         )
-       # Language selection
-        language = st.selectbox("Select Language:", list(LANGUAGES.keys()))
 
         if st.button("Generate SEO-Optimized Article"):
             if focus_keyword:
@@ -544,34 +520,6 @@ def main():
                     file_name="generated_recipes.csv",
                     mime="text/csv"
                 )
-
-elif app_mode == "Generate Images with Segmind":
-    st.title("Generate Images with Segmind")
-
-    # Prompt input for image generation
-    image_prompt = st.text_input(
-        "Enter a prompt for the image:",
-        placeholder="e.g., A delicious chocolate cake on a table, A bowl of fresh salad, etc."
-    )
-
-    if st.button("Generate Image"):
-        if image_prompt:
-            if 'segmind_api_key' not in st.session_state:
-                st.warning("Please enter your Segmind API key.")
-            else:
-                image_data = generate_segmind_image(image_prompt)
-                if image_data:
-                    # Check if the image_data is binary or a URL
-                    if isinstance(image_data, bytes):
-                        # Binary image data
-                        st.image(image_data, caption="Generated Image", use_container_width=True)  # Updated here
-                    else:
-                        # Image URL
-                        st.image(image_data, caption="Generated Image", use_container_width=True)  # Updated here
-                else:
-                    st.error("Failed to generate image.")
-        else:
-            st.warning("Please enter a prompt for the image.")
 
 if __name__ == "__main__":
     main()
