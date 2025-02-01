@@ -426,8 +426,8 @@ def main():
             """, unsafe_allow_html=True)
 
     # Navigation bar in the sidebar
-    st.sidebar.title("Navigation")
-    app_mode = st.sidebar.radio("Choose a mode", ["Generate Recipe", "SEO-Optimized Article Generator", "Recipe Generator from CSV", "Generate Images with Segmind"])
+    st.sidebar.title("Tools")
+    app_mode = st.sidebar.radio("Choose a Tool", ["Generate Recipe", "SEO-Optimized Article Generator", "Recipe Generator from CSV", "Generate Images with Segmind"])
 
     if app_mode == "Generate Recipe":
         # Recipe name input with placeholder
