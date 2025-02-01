@@ -545,33 +545,33 @@ def main():
                     mime="text/csv"
                 )
 
-    elif app_mode == "Generate Images with Segmind":
-        st.title("Generate Images with Segmind")
+elif app_mode == "Generate Images with Segmind":
+    st.title("Generate Images with Segmind")
 
-        # Prompt input for image generation
-        image_prompt = st.text_input(
-            "Enter a prompt for the image:",
-            placeholder="e.g., A delicious chocolate cake on a table, A bowl of fresh salad, etc."
-        )
+    # Prompt input for image generation
+    image_prompt = st.text_input(
+        "Enter a prompt for the image:",
+        placeholder="e.g., A delicious chocolate cake on a table, A bowl of fresh salad, etc."
+    )
 
-        if st.button("Generate Image"):
-            if image_prompt:
-                if 'segmind_api_key' not in st.session_state:
-                    st.warning("Please enter your Segmind API key.")
-                else:
-                    image_data = generate_segmind_image(image_prompt)
-                    if image_data:
-                        # Check if the image_data is binary or a URL
-                        if isinstance(image_data, bytes):
-                            # Binary image data
-                            st.image(image_data, caption="Generated Image", use_column_width=True)
-                        else:
-                            # Image URL
-                            st.image(image_data, caption="Generated Image", use_column_width=True)
-                    else:
-                        st.error("Failed to generate image.")
+    if st.button("Generate Image"):
+        if image_prompt:
+            if 'segmind_api_key' not in st.session_state:
+                st.warning("Please enter your Segmind API key.")
             else:
-                st.warning("Please enter a prompt for the image.")
+                image_data = generate_segmind_image(image_prompt)
+                if image_data:
+                    # Check if the image_data is binary or a URL
+                    if isinstance(image_data, bytes):
+                        # Binary image data
+                        st.image(image_data, caption="Generated Image", use_container_width=True)  # Updated here
+                    else:
+                        # Image URL
+                        st.image(image_data, caption="Generated Image", use_container_width=True)  # Updated here
+                else:
+                    st.error("Failed to generate image.")
+        else:
+            st.warning("Please enter a prompt for the image.")
 
 if __name__ == "__main__":
     main()
