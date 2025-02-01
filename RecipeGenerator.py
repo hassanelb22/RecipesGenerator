@@ -381,88 +381,37 @@ def main():
         unsafe_allow_html=True
     )
 
-    # Custom HTML for API Key Input Label
-    st.markdown("""
-        <label class="api-key-label">
-            Google GEMINI API Key
-            <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="api-key-link">
-                Get your API key here →
-            </a>
-        </label>
-    """, unsafe_allow_html=True)
-
-    # JavaScript to load API key from localStorage
-    st.markdown("""
-        <script>
-        // Load API key from localStorage when the page loads
-        function loadApiKey() {
-            const apiKey = localStorage.getItem("gemini_api_key");
-            if (apiKey) {
-                document.getElementById("apiKey").value = apiKey;
-            }
-        }
-        window.onload = loadApiKey;
-
-        // Save API key to localStorage when the input changes
-        function saveApiKey() {
-            const apiKey = document.getElementById("apiKey").value;
-            localStorage.setItem("gemini_api_key", apiKey);
-        }
-        </script>
-    """, unsafe_allow_html=True)
-
-    # API Key Input with placeholder
-    gemini_api_key = st.text_input(
-        "",  # Empty label since we're using custom HTML above
-        type="password",
-        value="",
-        key="apiKey",
-        on_change=None,
-        placeholder="Enter your Google API key"  # Placeholder for API key input
-    )
-
-    # Save API key to localStorage when the user inputs it
-    if gemini_api_key:
-        st.session_state.gemini_api_key = gemini_api_key
-        st.markdown(f"""
-            <script>
-            localStorage.setItem("gemini_api_key", "{gemini_api_key}");
-            </script>
-        """, unsafe_allow_html=True)
-
-    # Custom HTML for Segmind API Key Input Label
-    st.markdown("""
-        <label class="api-key-label">
-            Segmind API Key
-            <a href="https://cloud.segmind.com/console/api-keys" target="_blank" rel="noopener noreferrer" class="api-key-link">
-                Get your API key here →
-            </a>
-        </label>
-    """, unsafe_allow_html=True)
-
-    # Segmind API Key Input with placeholder
-    segmind_api_key = st.text_input(
-        "",  # Empty label since we're using custom HTML above
-        type="password",
-        value="",
-        key="segmindApiKey",
-        on_change=None,
-        placeholder="Enter your Segmind API key"  # Placeholder for API key input
-    )
-
-    # Save Segmind API key to localStorage when the user inputs it
-    if segmind_api_key:
-        st.session_state.segmind_api_key = segmind_api_key
-        st.markdown(f"""
-            <script>
-            localStorage.setItem("segmind_api_key", "{segmind_api_key}");
-            </script>
-        """, unsafe_allow_html=True)
-
     # Navigation bar in the sidebar
     st.sidebar.title("Navigation")
     app_mode = st.sidebar.radio("Choose a mode", ["Generate Recipe", "SEO-Optimized Article Generator", "Recipe Generator from CSV", "Generate Images with Segmind"])
 
+    # API Key Input in the Sidebar
+    st.sidebar.markdown("### API Keys")
+    gemini_api_key = st.sidebar.text_input(
+        "Google Gemini API Key",
+        type="password",
+        value="",
+        key="apiKey",
+        on_change=None,
+        placeholder="Enter your Google API key"
+    )
+
+    segmind_api_key = st.sidebar.text_input(
+        "Segmind API Key",
+        type="password",
+        value="",
+        key="segmindApiKey",
+        on_change=None,
+        placeholder="Enter your Segmind API key"
+    )
+
+    # Save API keys to session state
+    if gemini_api_key:
+        st.session_state.gemini_api_key = gemini_api_key
+    if segmind_api_key:
+        st.session_state.segmind_api_key = segmind_api_key
+
+    # Rest of the code remains the same...
     if app_mode == "Generate Recipe":
         # Recipe name input with placeholder
         recipe_name = st.text_input(
