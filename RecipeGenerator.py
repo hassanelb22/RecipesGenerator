@@ -10,7 +10,7 @@ SEGMIND_API_URL = "https://api.segmind.com/v1/recraft-v3"  # Segmind API URL
 LANGUAGES = {
     "🇬🇧 English": "Generate a detailed recipe post in English in the following structured format:",
     "🇪🇸 Spanish": "Genera una publicación detallada de una receta en español en el siguiente formato estructurado:",
-    "🇩🇪 German": "Erstellen Sie einen detaillierten Rezeptbeitrag auf Deutsch im folgenden strukturierten Format:",
+    "🇩🇪 German": "Erstellen Sie einen detallierten Rezeptbeitrag auf Deutsch im folgenden strukturierten Format:",
     "🇫🇷 French": "Générez una publicación detallada de recette en français dans le format structuré suivant:",
     "🇸🇦 Arabic": "قم بإنشاء منشور وصفة تفصيلي باللغة العربية بالتنسيق المنظم التالي:"
 }
@@ -373,16 +373,9 @@ def main():
                 st.error("Incorrect password. Please try again.")
         return
 
-    # Logo container with your logo
-    st.markdown(
-        '<div class="logo-container">'
-        '<img src="https://raw.githubusercontent.com/hassanelb22/RecipesGenerator/refs/heads/main/assets/recipe-generator.png" alt="Recipe Generator Logo">'
-        '</div>',
-        unsafe_allow_html=True
-    )
-
     # Navigation bar in the sidebar
     st.sidebar.title("Navigation")
+    st.sidebar.image("https://raw.githubusercontent.com/hassanelb22/RecipesGenerator/refs/heads/main/assets/recipe-generator.png", use_column_width=True)
     app_mode = st.sidebar.radio("Choose a mode", ["Generate Recipe", "SEO-Optimized Article Generator", "Recipe Generator from CSV", "Generate Images with Segmind"])
 
     # API Key Input in the Sidebar
@@ -485,6 +478,8 @@ def main():
             "Enter the focus keyword for the article:",
             placeholder="e.g., Healthy Eating Habits, Digital Marketing Trends, etc."
         )
+       # Language selection
+        language = st.selectbox("Select Language:", list(LANGUAGES.keys()))
 
         if st.button("Generate SEO-Optimized Article"):
             if focus_keyword:
