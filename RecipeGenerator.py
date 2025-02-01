@@ -268,16 +268,7 @@ def generate_segmind_image(prompt):
             "style": "any"  # Style of the image
         }
         
-        # Debug: Print the payload being sent
-        # st.write("Sending payload to Segmind API:")
-        # st.write(payload)
-        
         response = requests.post(SEGMIND_API_URL, headers=headers, json=payload)
-        
-        # Debug: Print the response status code and content
-        #st.write("API Response Status Code:", response.status_code)
-        #st.write("API Response Content Type:", response.headers.get("Content-Type"))
-        #st.write("API Response Content (first 100 characters):", response.text[:100])
         
         if response.status_code == 200:
             # Check if the response is an image (binary data)
@@ -385,13 +376,36 @@ def main():
     st.sidebar.title("Navigation")
     app_mode = st.sidebar.radio("Choose a mode", ["Generate Recipe", "SEO-Optimized Article Generator", "Recipe Generator from CSV", "Generate Images with Segmind"])
 
+    # JavaScript to load API keys from localStorage
+    st.markdown("""
+        <script>
+        // Load API keys from localStorage when the page loads
+        function loadApiKeys() {
+            const geminiApiKey = localStorage.getItem("gemini_api_key");
+            const segmindApiKey = localStorage.getItem("segmind_api_key");
+            if (geminiApiKey) {
+                document.getElementById("gemini_api_key").value = geminiApiKey;
+            }
+            if (segmindApiKey) {
+                document.getElementById("segmind_api_key").value = segmindApiKey;
+            }
+        }
+        window.onload = loadApiKeys;
+
+        // Save API keys to localStorage when the input changes
+        function saveApiKey(key, value) {
+            localStorage.setItem(key, value);
+        }
+        </script>
+    """, unsafe_allow_html=True)
+
     # API Key Input in the Sidebar
     st.sidebar.markdown("### API Keys")
     gemini_api_key = st.sidebar.text_input(
         "Google Gemini API Key",
         type="password",
         value="",
-        key="apiKey",
+        key="gemini_api_key",
         on_change=None,
         placeholder="Enter your Google API key"
     )
@@ -400,16 +414,27 @@ def main():
         "Segmind API Key",
         type="password",
         value="",
-        key="segmindApiKey",
+        key="segmind_api_key",
         on_change=None,
         placeholder="Enter your Segmind API key"
     )
 
-    # Save API keys to session state
+    # Save API keys to localStorage when the user inputs them
     if gemini_api_key:
         st.session_state.gemini_api_key = gemini_api_key
+        st.markdown(f"""
+            <script>
+            saveApiKey("gemini_api_key", "{gemini_api_key}");
+            </script>
+        """, unsafe_allow_html=True)
+
     if segmind_api_key:
         st.session_state.segmind_api_key = segmind_api_key
+        st.markdown(f"""
+            <script>
+            saveApiKey("segmind_api_key", "{segmind_api_key}");
+            </script>
+        """, unsafe_allow_html=True)
 
     # Rest of the code remains the same...
     if app_mode == "Generate Recipe":
