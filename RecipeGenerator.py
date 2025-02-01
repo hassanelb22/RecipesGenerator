@@ -10,7 +10,7 @@ SEGMIND_API_URL = "https://api.segmind.com/v1/recraft-v3"  # Segmind API URL
 LANGUAGES = {
     "🇬🇧 English": "Generate a detailed recipe post in English in the following structured format:",
     "🇪🇸 Spanish": "Genera una publicación detallada de una receta en español en el siguiente formato estructurado:",
-    "🇩🇪 German": "Erstellen Sie einen detaillierten Rezeptbeitrag auf Deutsch im folgenden strukturierten Format:",
+    "🇩🇪 German": "Erstellen Sie einen detallierten Rezeptbeitrag auf Deutsch im folgenden strukturierten Format:",
     "🇫🇷 French": "Générez una publicación detallada de recette en français dans le format structuré suivant:",
     "🇸🇦 Arabic": "قم بإنشاء منشور وصفة تفصيلي باللغة العربية بالتنسيق المنظم التالي:"
 }
@@ -268,29 +268,13 @@ def generate_segmind_image(prompt):
             "style": "any"  # Style of the image
         }
         
-        # Debug: Print the payload being sent
-        # st.write("Sending payload to Segmind API:")
-        # st.write(payload)
-        
         response = requests.post(SEGMIND_API_URL, headers=headers, json=payload)
         
-        # Debug: Print the response status code and content
-        #st.write("API Response Status Code:", response.status_code)
-        #st.write("API Response Content Type:", response.headers.get("Content-Type"))
-        #st.write("API Response Content (first 100 characters):", response.text[:100])
-        
         if response.status_code == 200:
-            # Check if the response is an image (binary data)
             if response.headers.get("Content-Type", "").startswith("image/"):
-                # The response is an image, so we can display it directly
-                st.write("API returned an image.")
-                return response.content  # Return the binary image data
+                return response.content
             else:
-                # The response is JSON or another format
                 response_json = response.json()
-                st.write("API Response JSON:", response_json)
-                
-                # Extract the image URL or data from the response
                 image_url = response_json.get("data", {}).get("url", "")
                 if image_url:
                     return image_url
@@ -368,96 +352,78 @@ def main():
         else:
             if st.secrets["password"]:
                 st.session_state.authenticated = True
-                st.rerun()  # Use st.rerun() instead of st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("Incorrect password. Please try again.")
         return
 
-    # Logo container with your logo
-    st.markdown(
-        '<div class="logo-container">'
-        '<img src="https://raw.githubusercontent.com/hassanelb22/RecipesGenerator/refs/heads/main/assets/recipe-generator.png" alt="Recipe Generator Logo">'
-        '</div>',
-        unsafe_allow_html=True
-    )
+    # Sidebar for API keys and logo
+    with st.sidebar:
+        # Logo container with your logo
+        st.markdown(
+            '<div class="logo-container">'
+            '<img src="https://raw.githubusercontent.com/hassanelb22/RecipesGenerator/refs/heads/main/assets/recipe-generator.png" alt="Recipe Generator Logo">'
+            '</div>',
+            unsafe_allow_html=True
+        )
 
-    # Custom HTML for API Key Input Label
-    st.markdown("""
-        <label class="api-key-label">
-            Google GEMINI API Key
-            <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="api-key-link">
-                Get your API key here →
-            </a>
-        </label>
-    """, unsafe_allow_html=True)
-
-    # JavaScript to load API key from localStorage
-    st.markdown("""
-        <script>
-        // Load API key from localStorage when the page loads
-        function loadApiKey() {
-            const apiKey = localStorage.getItem("gemini_api_key");
-            if (apiKey) {
-                document.getElementById("apiKey").value = apiKey;
-            }
-        }
-        window.onload = loadApiKey;
-
-        // Save API key to localStorage when the input changes
-        function saveApiKey() {
-            const apiKey = document.getElementById("apiKey").value;
-            localStorage.setItem("gemini_api_key", apiKey);
-        }
-        </script>
-    """, unsafe_allow_html=True)
-
-    # API Key Input with placeholder
-    gemini_api_key = st.text_input(
-        "",  # Empty label since we're using custom HTML above
-        type="password",
-        value="",
-        key="apiKey",
-        on_change=None,
-        placeholder="Enter your Google API key"  # Placeholder for API key input
-    )
-
-    # Save API key to localStorage when the user inputs it
-    if gemini_api_key:
-        st.session_state.gemini_api_key = gemini_api_key
-        st.markdown(f"""
-            <script>
-            localStorage.setItem("gemini_api_key", "{gemini_api_key}");
-            </script>
+        # Custom HTML for API Key Input Label
+        st.markdown("""
+            <label class="api-key-label">
+                Google GEMINI API Key
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="api-key-link">
+                    Get your API key here →
+                </a>
+            </label>
         """, unsafe_allow_html=True)
 
-    # Custom HTML for Segmind API Key Input Label
-    st.markdown("""
-        <label class="api-key-label">
-            Segmind API Key
-            <a href="https://cloud.segmind.com/console/api-keys" target="_blank" rel="noopener noreferrer" class="api-key-link">
-                Get your API key here →
-            </a>
-        </label>
-    """, unsafe_allow_html=True)
+        # API Key Input with placeholder
+        gemini_api_key = st.text_input(
+            "",  # Empty label since we're using custom HTML above
+            type="password",
+            value="",
+            key="apiKey",
+            on_change=None,
+            placeholder="Enter your Google API key"  # Placeholder for API key input
+        )
 
-    # Segmind API Key Input with placeholder
-    segmind_api_key = st.text_input(
-        "",  # Empty label since we're using custom HTML above
-        type="password",
-        value="",
-        key="segmindApiKey",
-        on_change=None,
-        placeholder="Enter your Segmind API key"  # Placeholder for API key input
-    )
+        # Save API key to localStorage when the user inputs it
+        if gemini_api_key:
+            st.session_state.gemini_api_key = gemini_api_key
+            st.markdown(f"""
+                <script>
+                localStorage.setItem("gemini_api_key", "{gemini_api_key}");
+                </script>
+            """, unsafe_allow_html=True)
 
-    # Save Segmind API key to localStorage when the user inputs it
-    if segmind_api_key:
-        st.session_state.segmind_api_key = segmind_api_key
-        st.markdown(f"""
-            <script>
-            localStorage.setItem("segmind_api_key", "{segmind_api_key}");
-            </script>
+        # Custom HTML for Segmind API Key Input Label
+        st.markdown("""
+            <label class="api-key-label">
+                Segmind API Key
+                <a href="https://cloud.segmind.com/console/api-keys" target="_blank" rel="noopener noreferrer" class="api-key-link">
+                    Get your API key here →
+                </a>
+            </label>
         """, unsafe_allow_html=True)
+
+        # Segmind API Key Input with placeholder
+        segmind_api_key = st.text_input(
+            "",  # Empty label since we're using custom HTML above
+            type="password",
+            value="",
+            key="segmindApiKey",
+            on_change=None,
+            placeholder="Enter your Segmind API key"  # Placeholder for API key input
+        )
+
+        # Save Segmind API key to localStorage when the user inputs it
+        if segmind_api_key:
+            st.session_state.segmind_api_key = segmind_api_key
+            st.markdown(f"""
+                <script>
+                localStorage.setItem("segmind_api_key", "{segmind_api_key}");
+                </script>
+            """, unsafe_allow_html=True)
 
     # Navigation bar in the sidebar
     st.sidebar.title("Navigation")
