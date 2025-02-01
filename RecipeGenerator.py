@@ -1,6 +1,77 @@
 import streamlit as st
 import requests
 import pandas as pd
+# Custom CSS for the carousel
+st.markdown("""
+    <style>
+    .carousel {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 10px;
+        padding: 10px;
+    }
+    .carousel-item {
+        flex: 0 0 auto;
+        scroll-snap-align: start;
+        width: 200px;
+        height: 100px;
+        background-color: #f0f0f0;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        color: #333;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .carousel-item:hover {
+        background-color: #ddd;
+    }
+    .carousel-item.active {
+        background-color: #007bff;
+        color: white;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Carousel HTML for tools
+tools = [
+    {"name": "Generate Recipe", "icon": "🍳"},
+    {"name": "SEO-Optimized Article Generator", "icon": "📝"},
+    {"name": "Recipe Generator from CSV", "icon": "📂"},
+    {"name": "Generate Images with Segmind", "icon": "🖼️"},
+]
+
+# Display the carousel
+st.title("Tools Carousel")
+carousel_html = """
+<div class="carousel">
+"""
+for tool in tools:
+    carousel_html += f"""
+    <div class="carousel-item" onclick="selectTool('{tool['name']}')">
+        {tool['icon']} {tool['name']}
+    </div>
+    """
+carousel_html += """
+</div>
+"""
+st.markdown(carousel_html, unsafe_allow_html=True)
+
+# JavaScript to handle tool selection
+st.markdown("""
+    <script>
+    function selectTool(toolName) {
+        // Set the selected tool in Streamlit session state
+        Streamlit.setComponentValue(toolName);
+    }
+    </script>
+""", unsafe_allow_html=True)
+
+# Handle tool selection
+selected_tool = st.session_state.get("selected_tool", "Generate Recipe")
 
 # API configurations
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
