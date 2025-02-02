@@ -43,36 +43,6 @@ EMOJI_MAPPING = {
     "beer": "🍺",
     "cocktail": "🍹",
 }
-# New dictionary for non-halal ingredients and their alternatives
-HALAL_SUBSTITUTES = {
-    "pork": "chicken",
-    "ham": "turkey ham",
-    "bacon": "turkey bacon",
-    "pepperoni": "beef pepperoni",
-    "gelatin": "halal gelatin",
-    "lard": "vegetable shortening",
-    "wine": "grape juice",
-    "red wine": "pomegranate juice",
-    "white wine": "white grape juice",
-    "beer": "non-alcoholic malt beverage",
-    "rum": "rum extract (alcohol-free)",
-    "brandy": "apple juice",
-    "vodka": "water",
-    "marsala wine": "chicken broth",
-    "cooking wine": "chicken broth",
-    "prosciutto": "halal beef bresaola",
-    "pancetta": "halal beef bacon",
-    "chorizo": "halal beef sausage",
-    "salami": "halal beef salami"
-}
-# Function to check and replace non-halal ingredients
-def make_recipe_halal(recipe_text):
-    modified_text = recipe_text
-    for non_halal, halal in HALAL_SUBSTITUTES.items():
-        # Case-insensitive replacement
-        pattern = re.compile(re.escape(non_halal), re.IGNORECASE)
-        modified_text = pattern.sub(f"{halal} (halal substitute)", modified_text)
-    return modified_text
 
 # Function to get a dynamic emoji based on the recipe name
 def get_dynamic_emoji(recipe_name):
@@ -83,19 +53,16 @@ def get_dynamic_emoji(recipe_name):
     return "🍳"  # Default emoji for recipes
 
 # Function to generate a recipe post using Gemini API
-def generate_recipe_post_gemini(recipe_name_or_text, language, halal_mode=False):
+def generate_recipe_post_gemini(recipe_name_or_text, language):
     try:
         headers = {
             "Content-Type": "application/json"
         }
         
+        # Get dynamic emoji for the recipe title
         emoji = get_dynamic_emoji(recipe_name_or_text)
         
-        # Modify prompt to include halal requirements if halal_mode is True
         prompt = f"{LANGUAGES[language]}\n\n"
-        if halal_mode:
-            prompt += "Please ensure all ingredients are halal-compliant. Avoid pork, alcohol, and non-halal meat products.\n\n"
-        
         prompt += f"{emoji}✨ {recipe_name_or_text} ✨{emoji}\n\n"
         prompt += "Ingredients:\n\n"
         prompt += "For [Component 1]:\n"
@@ -127,11 +94,9 @@ def generate_recipe_post_gemini(recipe_name_or_text, language, halal_mode=False)
         
         if response.status_code == 200:
             generated_text = response.json().get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "").strip()
-            generated_text = generated_text.replace("***", "")
             
-            # Apply halal substitutions if halal_mode is True
-            if halal_mode:
-                generated_text = make_recipe_halal(generated_text)
+            # Remove *** from the generated text
+            generated_text = generated_text.replace("***", "")
             
             return generated_text
         else:
@@ -140,7 +105,6 @@ def generate_recipe_post_gemini(recipe_name_or_text, language, halal_mode=False)
     except Exception as e:
         st.error(f"Error generating recipe post with Gemini: {e}")
         return None
-
 
 # Function to generate MidJourney prompt (Version 1)
 def generate_midjourney_prompt_v1(recipe):
@@ -486,9 +450,6 @@ def main():
         # Language selection
         language = st.selectbox("Select Language:", list(LANGUAGES.keys()))
 
-        # Add Halal mode toggle
-        halal_mode = st.toggle("Halal Mode", help="Enable to ensure all ingredients are halal-compliant")
-
         # Custom CSS to make the button full width
         st.markdown("""
             <style>
@@ -503,7 +464,7 @@ def main():
                 if 'gemini_api_key' not in st.session_state:
                     st.warning("Please enter your Gemini API key.")
                 else:
-                    recipe_post = generate_recipe_post_gemini(recipe_name, language, halal_mode)
+                    recipe_post = generate_recipe_post_gemini(recipe_name, language)
                     if recipe_post:
                         # Facebook-like post styling
                         st.markdown(f"""
@@ -514,7 +475,6 @@ def main():
                     <div class="post-info">
                         <div class="page-name">
                             Recipe Generator
-                            {'🥩✨ Halal Recipe ✨🥩' if halal_mode else ''}
                             <svg viewBox="0 0 12 13" width="12" height="12" fill="#007bff" title="Verified account" style="margin-left: 4px;">
                                 <title>Verified account</title>
                                 <g fill-rule="evenodd" transform="translate(-98 -917)">
