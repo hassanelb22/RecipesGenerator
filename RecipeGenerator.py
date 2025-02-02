@@ -436,7 +436,7 @@ def main():
     elif app_mode == "SEO-Optimized Article Generator":
         st.title("SEO-Optimized Article Generator")
     elif app_mode == "Recipe Generator from CSV":
-        #st.title("Recipe Generator from CSV")
+        st.title("Recipe Generator from CSV")
     elif app_mode == "Generate Images with Segmind":
         st.title("Generate Images with Segmind")
 
@@ -552,7 +552,7 @@ def main():
                 st.warning("Please enter a focus keyword.")
 
     elif app_mode == "Recipe Generator from CSV":
-        st.title("Recipe Generator from CSV")
+        #st.title("Recipe Generator from CSV")
 
         # Upload CSV file
         uploaded_file = st.file_uploader("Upload a CSV file with recipe names", type=["csv"])
