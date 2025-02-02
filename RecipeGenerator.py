@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import pandas as pd
+from datetime import datetime
 
 # API configurations
 GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
@@ -288,8 +289,63 @@ def generate_segmind_image(prompt):
         st.error(f"Error generating image with Segmind: {e}")
         return None
 
-# Streamlit app
+# Function to add a recipe to the history
+def add_recipe_to_history(recipe):
+    """
+    Adds a generated recipe to the history.
+    """
+    if 'recipe_history' not in st.session_state:
+        st.session_state.recipe_history = []
+    st.session_state.recipe_history.append(recipe)
 
+# Function to display the history page
+def history_page():
+    st.title("Recipes History")
+    
+    # Initialize recipe history in session state if it doesn't exist
+    if 'recipe_history' not in st.session_state:
+        st.session_state.recipe_history = []
+    
+    if st.session_state.recipe_history:
+        # Display each recipe in an accordion
+        for idx, recipe in enumerate(st.session_state.recipe_history):
+            with st.expander(f"Recipe {idx + 1} - {recipe.splitlines()[0]}"):  # Use the first line of the recipe as the accordion title
+                st.markdown(recipe)
+                st.markdown("---")
+        
+        # Add a button to export recipes as a CSV file
+        if st.button("Export Recipes as CSV"):
+            export_recipes_to_csv()
+    else:
+        st.write("No recipes generated yet.")
+
+# Function to export recipes to a CSV file
+def export_recipes_to_csv():
+    """
+    Exports the recipe history to a CSV file.
+    """
+    if 'recipe_history' not in st.session_state or not st.session_state.recipe_history:
+        st.warning("No recipes to export.")
+        return
+    
+    # Create a DataFrame from the recipe history
+    recipes_df = pd.DataFrame({
+        "Recipe": st.session_state.recipe_history,
+        "Generated At": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    })
+    
+    # Convert the DataFrame to a CSV file
+    csv = recipes_df.to_csv(index=False)
+    
+    # Create a download button for the CSV file
+    st.download_button(
+        label="Download CSV",
+        data=csv,
+        file_name="recipe_history.csv",
+        mime="text/csv",
+    )
+
+# Streamlit app
 def main():
     # Custom CSS to center the logo and handle RTL for Arabic
     st.markdown("""
@@ -428,7 +484,7 @@ def main():
 
     # Navigation bar in the sidebar
     st.sidebar.title("Tools")
-    app_mode = st.sidebar.radio("Choose a Tool", ["Generate Recipe", "SEO-Optimized Article Generator", "Recipe Generator from CSV", "Generate Images with Segmind"])
+    app_mode = st.sidebar.radio("Choose a Tool", ["Generate Recipe", "SEO-Optimized Article Generator", "Recipe Generator from CSV", "Generate Images with Segmind", "Recipes History"])
 
     # Main section title based on the selected tool
     if app_mode == "Generate Recipe":
@@ -439,6 +495,9 @@ def main():
         st.title("Recipe Generator from CSV")
     elif app_mode == "Generate Images with Segmind":
         st.title("Generate Images with Segmind")
+    elif app_mode == "Recipes History":
+        history_page()
+        return
 
     if app_mode == "Generate Recipe":
         # Recipe name input with placeholder
@@ -466,6 +525,9 @@ def main():
                 else:
                     recipe_post = generate_recipe_post_gemini(recipe_name, language)
                     if recipe_post:
+                        # Add the generated recipe to the history
+                        add_recipe_to_history(recipe_post)
+
                         # Facebook-like post styling
                         st.markdown(f"""
         <div class="facebook-post">
@@ -552,8 +614,6 @@ def main():
                 st.warning("Please enter a focus keyword.")
 
     elif app_mode == "Recipe Generator from CSV":
-        #st.title("Recipe Generator from CSV")
-
         # Upload CSV file
         uploaded_file = st.file_uploader("Upload a CSV file with recipe names", type=["csv"])
         
@@ -579,8 +639,6 @@ def main():
                 )
 
     elif app_mode == "Generate Images with Segmind":
-        #st.title("Generate Images with Segmind")
-
         # Prompt input for image generation
         image_prompt = st.text_input(
             "Enter a prompt for the image:",
