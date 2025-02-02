@@ -43,35 +43,6 @@ EMOJI_MAPPING = {
     "beer": "🍺",
     "cocktail": "🍹",
 }
-def history_page():
-    st.title("Recipes History")
-    
-    # Initialize recipe history in session state if it doesn't exist
-    if 'recipe_history' not in st.session_state:
-        st.session_state.recipe_history = []
-    
-    if st.session_state.recipe_history:
-        # Display each recipe in an accordion
-        for idx, recipe in enumerate(st.session_state.recipe_history):
-            with st.expander(f"Recipe {idx + 1} - {recipe.splitlines()[0]}"):  # Use the first line of the recipe as the accordion title
-                st.markdown(recipe)
-                st.markdown("---")
-        
-        # Add a button to export recipes as a CSV file
-        if st.button("Export Recipes as CSV"):
-            export_recipes_to_csv()
-    else:
-        st.write("No recipes generated yet.")
-
-def add_recipe_to_history(recipe):
-    """
-    Adds a generated recipe to the history.
-    """
-    if 'recipe_history' not in st.session_state:
-        st.session_state.recipe_history = []
-    st.session_state.recipe_history.append(recipe)
-
-def export_recipes_to_csv():
 
 # Function to get a dynamic emoji based on the recipe name
 def get_dynamic_emoji(recipe_name):
@@ -457,7 +428,7 @@ def main():
 
     # Navigation bar in the sidebar
     st.sidebar.title("Tools")
-    app_mode = st.sidebar.radio("Choose a Tool", ["Generate Recipe", "SEO-Optimized Article Generator", "Recipe Generator from CSV", "Generate Images with Segmind", "Recipes History"])
+    app_mode = st.sidebar.radio("Choose a Tool", ["Generate Recipe", "SEO-Optimized Article Generator", "Recipe Generator from CSV", "Generate Images with Segmind"])
 
     # Main section title based on the selected tool
     if app_mode == "Generate Recipe":
