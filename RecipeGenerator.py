@@ -438,7 +438,7 @@ def main():
     elif app_mode == "Recipe Generator from CSV":
         st.title("Recipe Generator from CSV")
     elif app_mode == "Generate Images with Segmind":
-        #st.title("Generate Images with Segmind")
+        st.title("Generate Images with Segmind")
 
     if app_mode == "Generate Recipe":
         # Recipe name input with placeholder
@@ -579,7 +579,7 @@ def main():
                 )
 
     elif app_mode == "Generate Images with Segmind":
-        st.title("Generate Images with Segmind")
+        #st.title("Generate Images with Segmind")
 
         # Prompt input for image generation
         image_prompt = st.text_input(
