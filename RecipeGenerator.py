@@ -436,7 +436,7 @@ def main():
     elif app_mode == "SEO-Optimized Article Generator":
         st.title("SEO-Optimized Article Generator")
     elif app_mode == "Recipe Generator from CSV":
-        st.title("Recipe Generator from CSV")
+        #st.title("Recipe Generator from CSV")
     elif app_mode == "Generate Images with Segmind":
         st.title("Generate Images with Segmind")
 
