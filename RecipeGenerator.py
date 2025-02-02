@@ -289,6 +289,7 @@ def generate_segmind_image(prompt):
         return None
 
 # Streamlit app
+
 def main():
     # Custom CSS to center the logo and handle RTL for Arabic
     st.markdown("""
@@ -428,6 +429,16 @@ def main():
     # Navigation bar in the sidebar
     st.sidebar.title("Tools")
     app_mode = st.sidebar.radio("Choose a Tool", ["Generate Recipe", "SEO-Optimized Article Generator", "Recipe Generator from CSV", "Generate Images with Segmind"])
+
+    # Main section title based on the selected tool
+    if app_mode == "Generate Recipe":
+        st.title("Generate Recipe")
+    elif app_mode == "SEO-Optimized Article Generator":
+        st.title("SEO-Optimized Article Generator")
+    elif app_mode == "Recipe Generator from CSV":
+        st.title("Recipe Generator from CSV")
+    elif app_mode == "Generate Images with Segmind":
+        st.title("Generate Images with Segmind")
 
     if app_mode == "Generate Recipe":
         # Recipe name input with placeholder
